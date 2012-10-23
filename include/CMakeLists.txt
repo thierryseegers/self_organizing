@@ -1,6 +1,6 @@
 # This is somewhat of a "dummy" target to put all the headers of the self_organizing library in one place rather than have all projects hold references to them.
 
-file(GLOB headers ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
+file(GLOB headers ${CMAKE_CURRENT_SOURCE_DIR}/self_organizing.h)
 
 source_group(headers FILES ${headers})
 

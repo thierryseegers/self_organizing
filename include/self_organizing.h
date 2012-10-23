@@ -155,7 +155,7 @@ class container
 {
 	typedef typename Container<T, std::allocator<T>> impl_type;
 
-	impl_type l_;
+	impl_type c_;
 
 public:
 	static_assert(std::is_same<FindPolicy, find_policy::count>::value ^ !std::is_same<InsertionPolicy, insertion_policy::count>::value, "Incompatible policy types selected.");
@@ -167,68 +167,68 @@ public:
 
 	iterator begin()
 	{
-		return l_.begin();
+		return c_.begin();
 	}
 
 	const_iterator begin() const
 	{
-		return l_.begin();
+		return c_.begin();
 	}
 
 	iterator end()
 	{
-		return l_.end();
+		return c_.end();
 	}
 
 	const_iterator end() const
 	{
-		return l_.end();
+		return c_.end();
 	}
 
 	bool empty() const
 	{
-		return l_.empty();
+		return c_.empty();
 	}
 
 	size_type size() const
 	{
-		return l_.size();
+		return c_.size();
 	}
 
 	size_type max_size() const
 	{
-		return l_.max_size();
+		return c_.max_size();
 	}
 
 	void clear()
 	{
-		return l_.clear();
+		return c_.clear();
 	}
 
 	iterator insert(const value_type& value)
 	{
-		return InsertionPolicy::insert(detail::list<T>::l_, value);
+		return InsertionPolicy::insert(detail::list<T>::c_, value);
 	}
 
 	template<class InputIt>
 	void insert(InputIt first, InputIt last)
 	{
-		return InsertionPolicy::insert(l_, first, last);
+		return InsertionPolicy::insert(c_, first, last);
 	}
 
 	iterator erase(iterator i)
 	{
-		return l_.erase(i);
+		return c_.erase(i);
 	}
 
 	iterator erase(const_iterator i)
 	{
-		return l_.erase(i);
+		return c_.erase(i);
 	}
 
 	iterator find(const value_type& value)
 	{
-		return FindPolicy::find(l_, value);
+		return FindPolicy::find(c_, value);
 	}
 };
 
@@ -237,7 +237,7 @@ class container<Container, T, find_policy::count, insertion_policy::count>
 {
 	typedef typename Container<std::pair<size_t, T>, std::allocator<std::pair<size_t, T>>> impl_type;
 
-	impl_type l_;
+	impl_type c_;
 
 public:
 	typedef T value_type;
@@ -380,53 +380,68 @@ public:
 
 	iterator<T> begin()
 	{
-		return l_.begin();
+		return c_.begin();
 	}
 
 	const_iterator<T> begin() const
 	{
-		return l_.begin();
+		return c_.begin();
 	}
 
 	iterator<T> end()
 	{
-		return l_.end();
+		return c_.end();
 	}
 
 	const_iterator<T> end() const
 	{
-		return l_.end();
+		return c_.end();
+	}
+
+	bool empty() const
+	{
+		return c_.empty();
+	}
+
+	size_type size() const
+	{
+		return c_.size();
+	}
+
+	size_type max_size() const
+	{
+		return c_.max_size();
 	}
 
 	void clear()
 	{
-		l_clear();
+		c_.clear();
 	}
 
 	iterator<T> insert(const value_type& value)
 	{
-		return insertion_policy::count::insert(l_, value);
+		return insertion_policy::count::insert(c_, value);
 	}
 
 	template<class InputIt>
 	void insert(InputIt first, InputIt last)
 	{
-		return insertion_policy::count::insert(l_, first, last);
+		return insertion_policy::count::insert(c_, first, last);
 	}
 
 	iterator<T> erase(iterator<T> i)
 	{
-		return l_.erase(i);
+		return c_.erase(i);
 	}
 
 	iterator<T> erase(const_iterator<T> i)
 	{
-		return l_.erase(i);
+		return c_.erase(i);
 	}
 
 	iterator<T> find(const value_type& value)
 	{
-		return find_policy::count::find(l_, value);
+		return find_policy::count::find(c_, value);
 	}
 };
 
