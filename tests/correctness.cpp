@@ -29,6 +29,136 @@ args_t make_args(const char* types[], char* values[], int c)
 }
 
 template<typename Container>
+bool empty()
+{
+	Container c;
+
+	if(c.size() != 0)
+	{
+		return false;
+	}
+
+	if(c.begin() != c.end())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool empty_list()
+{
+	return empty<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
+}
+
+bool empty_vector()
+{
+	return empty<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
+}
+
+template<typename Container>
+bool insert()
+{
+	Container c;
+
+	c.insert(begin(zero_to_seven), end(zero_to_seven));
+
+	return equal(begin(c), end(c), begin(zero_to_seven));
+}
+
+bool insert_list()
+{
+	return insert<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
+}
+
+bool insert_vector()
+{
+	return insert<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
+}
+
+template<typename Container>
+bool size()
+{
+	Container c;
+
+	c.insert(begin(zero_to_seven), end(zero_to_seven));
+
+	return c.size() == 8;
+}
+
+bool size_list()
+{
+	return size<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
+}
+
+bool size_vector()
+{
+	return size<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
+}
+
+template<typename Container>
+bool front_back()
+{
+	Container c;
+
+	c.insert(begin(zero_to_seven), end(zero_to_seven));
+
+	if(c.front() != 0)
+	{
+		return false;
+	}
+
+	if(c.back() != 7)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool front_back_list()
+{
+	return front_back<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
+}
+
+bool front_back_vector()
+{
+	return front_back<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
+}
+
+template<typename Container>
+bool clear()
+{
+	Container c;
+
+	c.insert(begin(zero_to_seven), end(zero_to_seven));
+
+	c.clear();
+
+	if(c.size() != 0)
+	{
+		return false;
+	}
+
+	if(c.begin() != c.end())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool clear_list()
+{
+	return clear<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
+}
+
+bool clear_vector()
+{
+	return clear<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
+}
+
+template<typename Container>
 bool final_order(const array<int, 8> final_order)
 {
 	Container c;
@@ -87,87 +217,6 @@ bool final_order_vector_transpose()
 	return final_order<so::vector<int, so::find_policy::transpose, so::insertion_policy::insert_back>>(order);
 }
 
-template<typename Container>
-bool empty()
-{
-	Container c;
-
-	if(c.size() != 0)
-	{
-		return false;
-	}
-
-	if(c.begin() != c.end())
-	{
-		return false;
-	}
-
-	return true;
-}
-
-bool empty_list()
-{
-	return empty<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
-}
-
-bool empty_vector()
-{
-	return empty<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
-}
-
-template<typename Container>
-bool size()
-{
-	Container c;
-
-	c.insert(begin(zero_to_seven), end(zero_to_seven));
-
-	return c.size() == 8;
-}
-
-bool size_list()
-{
-	return size<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
-}
-
-bool size_vector()
-{
-	return size<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
-}
-
-template<typename Container>
-bool clear()
-{
-	Container c;
-
-	c.insert(begin(zero_to_seven), end(zero_to_seven));
-
-	c.clear();
-
-	if(c.size() != 0)
-	{
-		return false;
-	}
-
-	if(c.begin() != c.end())
-	{
-		return false;
-	}
-
-	return true;
-}
-
-bool clear_list()
-{
-	return clear<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
-}
-
-bool clear_vector()
-{
-	return clear<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
-}
-
-
 int main(int argc, char* argv[])
 {
 	bool b = false;
@@ -180,6 +229,14 @@ int main(int argc, char* argv[])
 	{
 		b = empty_vector();
 	}
+	else if(strcmp(argv[1], "insert_list") == 0)
+	{
+		b = insert_list();
+	}
+	else if(strcmp(argv[1], "insert_vector") == 0)
+	{
+		b = insert_vector();
+	}
 	else if(strcmp(argv[1], "size_list") == 0)
 	{
 		b = size_list();
@@ -187,6 +244,14 @@ int main(int argc, char* argv[])
 	else if(strcmp(argv[1], "size_vector") == 0)
 	{
 		b = size_vector();
+	}
+	else if(strcmp(argv[1], "front_back_list") == 0)
+	{
+		b = front_back_list();
+	}
+	else if(strcmp(argv[1], "front_back_vector") == 0)
+	{
+		b = front_back_vector();
 	}
 	else if(strcmp(argv[1], "clear_list") == 0)
 	{

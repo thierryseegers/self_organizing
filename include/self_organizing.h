@@ -162,8 +162,32 @@ public:
 
 	typedef T value_type;
 	typedef typename impl_type::size_type size_type;
+	typedef typename impl_type::reference reference;
+	typedef typename impl_type::const_reference const_reference;
+	typedef typename impl_type::pointer pointer;
+	typedef typename impl_type::const_pointer const_pointer;
 	typedef typename impl_type::iterator iterator;
 	typedef typename impl_type::const_iterator const_iterator;
+
+	reference front()
+	{
+		return *begin();
+	}
+
+	const_reference front() const
+	{
+		return *cbegin();
+	}
+
+	reference back()
+	{
+		return *--end();
+	}
+
+	const_reference back() const
+	{
+		return *--end();
+	}
 
 	iterator begin()
 	{
@@ -175,6 +199,11 @@ public:
 		return c_.begin();
 	}
 
+	const_iterator cbegin() const
+	{
+		return c_.cbegin();
+	}
+
 	iterator end()
 	{
 		return c_.end();
@@ -183,6 +212,11 @@ public:
 	const_iterator end() const
 	{
 		return c_.end();
+	}
+
+	const_iterator cend() const
+	{
+		return c_.cend();
 	}
 
 	bool empty() const
@@ -242,6 +276,10 @@ class container<Container, T, find_policy::count, insertion_policy::count>
 public:
 	typedef T value_type;
 	typedef typename impl_type::size_type size_type;
+	typedef typename T& reference;
+	typedef typename T const& const_reference;
+	typedef typename T* pointer;
+	typedef typename T const* const_pointer;
 
 	template<typename U>
 	class const_iterator
@@ -377,6 +415,26 @@ public:
 			return !(*this == j);
 		}
 	};
+
+	reference front()
+	{
+		return *begin();
+	}
+
+	const_reference front() const
+	{
+		return *cbegin();
+	}
+
+	reference back()
+	{
+		return *--end();
+	}
+
+	const_reference back() const
+	{
+		return *--cend();
+	}
 
 	iterator<T> begin()
 	{
