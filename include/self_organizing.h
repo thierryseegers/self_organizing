@@ -169,6 +169,15 @@ public:
 	typedef typename impl_type::iterator iterator;
 	typedef typename impl_type::const_iterator const_iterator;
 
+	container()
+	{}
+	
+	template<typename InputIt>
+	container(InputIt first, InputIt last)
+	{
+		std::copy(first, last, std::back_inserter(c_));
+	}
+	
 	reference front()
 	{
 		return *begin();
@@ -416,6 +425,18 @@ public:
 		}
 	};
 
+	container()
+	{}
+
+	template<typename InputIt>
+	container(InputIt first, InputIt last)
+	{
+		for(; first != last; ++first)
+		{
+			c_.push_back(std::make_pair(0, *first));
+		}
+	}
+	
 	reference front()
 	{
 		return *begin();
@@ -506,16 +527,52 @@ public:
 }
 
 template<typename T, typename FindPolicy, typename InsertionPolicy>
-class list : public detail::container<std::list, T, FindPolicy, InsertionPolicy> {};
+class list : public detail::container<std::list, T, FindPolicy, InsertionPolicy>
+{
+public:
+	list() : detail::container<std::list, T, FindPolicy, InsertionPolicy>()
+	{}
+
+	template<typename InputIt>
+	list(InputIt first, InputIt last) : detail::container<std::list, T, FindPolicy, InsertionPolicy>(first, last)
+	{}
+};
 
 template<typename T>
-class list<T, find_policy::count, insertion_policy::count> : public detail::container<std::list, T, find_policy::count, insertion_policy::count> {};
+class list<T, find_policy::count, insertion_policy::count> : public detail::container<std::list, T, find_policy::count, insertion_policy::count>
+{
+public:
+	list() : detail::container<std::list, T, find_policy::count, insertion_policy::count>()
+	{}
+
+	template<typename InputIt>
+	list(InputIt first, InputIt last) : detail::container<std::list, T, find_policy::count, insertion_policy::count>(first, last)
+	{}
+};
 
 template<typename T, typename FindPolicy, typename InsertionPolicy>
-class vector : public detail::container<std::vector, T, FindPolicy, InsertionPolicy> {};
+class vector : public detail::container<std::vector, T, FindPolicy, InsertionPolicy>
+{
+public:
+	vector() : detail::container<std::vector, T, FindPolicy, InsertionPolicy>()
+	{}
+
+	template<typename InputIt>
+	vector(InputIt first, InputIt last) : detail::container<std::vector, T, FindPolicy, InsertionPolicy>(first, last)
+	{}
+};
 
 template<typename T>
-class vector<T, find_policy::count, insertion_policy::count> : public detail::container<std::vector, T, find_policy::count, insertion_policy::count> {};
+class vector<T, find_policy::count, insertion_policy::count> : public detail::container<std::vector, T, find_policy::count, insertion_policy::count>
+{
+public:
+	vector() : detail::container<std::vector, T, find_policy::count, insertion_policy::count>()
+	{}
+
+	template<typename InputIt>
+	vector(InputIt first, InputIt last) : detail::container<std::vector, T, find_policy::count, insertion_policy::count>(first, last)
+	{}
+};
 
 }
 
