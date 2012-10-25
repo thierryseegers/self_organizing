@@ -90,76 +90,18 @@ namespace find_policy
 	};
 }
 
-namespace insertion_policy
-{
-	struct count
-	{
-		template<typename Impl, typename T>
-		static typename Impl::iterator insert(Impl& impl, const T& value)
-		{
-			return impl.insert(impl.end(), std::make_pair(0, value));
-		}
-
-		template<typename Impl, typename InputIt>
-		static void insert(Impl& impl, InputIt first, InputIt last)
-		{
-			for(; first != last; ++first)
-			{
-				insert(impl, *first);
-			}
-		}
-	};
-
-	struct insert_back
-	{
-		template<typename Impl, typename T>
-		static typename Impl::iterator insert(Impl& impl, const T& value)
-		{
-			return impl.insert(impl.end(), value);
-		}
-
-		template<typename Impl, typename InputIt>
-		static void insert(Impl& impl, InputIt first, InputIt last)
-		{
-			for(; first != last; ++first)
-			{
-				insert(impl, *first);
-			}
-		}
-	};
-
-	struct insert_front
-	{
-		template<typename Impl, typename T>
-		static typename Impl::iterator insert(Impl& impl, const T& value)
-		{
-			return impl.insert(impl.begin(), value);
-		}
-
-		template<typename Impl, typename InputIt>
-		static void insert(Impl& impl, InputIt first, InputIt last)
-		{
-			for(; first != last; ++first)
-			{
-				insert(impl, *first);
-			}
-		}
-	};
-}
-
 namespace detail
 {
 
-template<template<typename, typename> class Container, typename T, typename FindPolicy, typename InsertionPolicy>
+template<template<typename, typename> class Container, typename T, typename FindPolicy>
 class container
 {
+protected:
 	typedef typename Container<T, std::allocator<T>> impl_type;
 
 	impl_type c_;
 
 public:
-	static_assert(std::is_same<FindPolicy, find_policy::count>::value ^ !std::is_same<InsertionPolicy, insertion_policy::count>::value, "Incompatible policy types selected.");
-
 	typedef T value_type;
 	typedef typename impl_type::size_type size_type;
 	typedef typename impl_type::reference reference;
@@ -248,17 +190,6 @@ public:
 		return c_.clear();
 	}
 
-	iterator insert(const value_type& value)
-	{
-		return InsertionPolicy::insert(detail::list<T>::c_, value);
-	}
-
-	template<class InputIt>
-	void insert(InputIt first, InputIt last)
-	{
-		return InsertionPolicy::insert(c_, first, last);
-	}
-
 	iterator erase(iterator i)
 	{
 		return c_.erase(i);
@@ -269,6 +200,11 @@ public:
 		return c_.erase(i);
 	}
 
+	void push_back(const value_type& value)
+	{
+		return c_.push_back(value);
+	}
+
 	iterator find(const value_type& value)
 	{
 		return FindPolicy::find(c_, value);
@@ -276,7 +212,7 @@ public:
 };
 
 template<template<typename, typename> class Container, typename T>
-class container<Container, T, find_policy::count, insertion_policy::count>
+class container<Container, T, find_policy::count>
 {
 	typedef typename Container<std::pair<size_t, T>, std::allocator<std::pair<size_t, T>>> impl_type;
 
@@ -293,7 +229,7 @@ public:
 	template<typename U>
 	class const_iterator
 	{
-		typedef typename container<Container, U, find_policy::count, insertion_policy::count>::impl_type::const_iterator impl_type;
+		typedef typename container<Container, U, find_policy::count>::impl_type::const_iterator impl_type;
 		typename impl_type i;
 
 	public:
@@ -311,7 +247,7 @@ public:
 
 		const_iterator(typename impl_type i) : i(i) {}
 
-		const_iterator(typename container<Container, U, find_policy::count, insertion_policy::count>::impl_type::iterator i) : i(i) {}
+		const_iterator(typename container<Container, U, find_policy::count>::impl_type::iterator i) : i(i) {}
 
 		operator typename impl_type()
 		{
@@ -359,7 +295,7 @@ public:
 	template<typename U>
 	class iterator
 	{
-		typedef typename container<Container, U, find_policy::count, insertion_policy::count>::impl_type::iterator impl_type;
+		typedef typename container<Container, U, find_policy::count>::impl_type::iterator impl_type;
 		typename impl_type i;
 
 	public:
@@ -497,17 +433,6 @@ public:
 		c_.clear();
 	}
 
-	iterator<T> insert(const value_type& value)
-	{
-		return insertion_policy::count::insert(c_, value);
-	}
-
-	template<class InputIt>
-	void insert(InputIt first, InputIt last)
-	{
-		return insertion_policy::count::insert(c_, first, last);
-	}
-
 	iterator<T> erase(iterator<T> i)
 	{
 		return c_.erase(i);
@@ -518,6 +443,11 @@ public:
 		return c_.erase(i);
 	}
 
+	void push_back(const value_type& value)
+	{
+		return c_.push_back(std::make_pair(0, value));
+	}
+
 	iterator<T> find(const value_type& value)
 	{
 		return find_policy::count::find(c_, value);
@@ -526,51 +456,61 @@ public:
 
 }
 
-template<typename T, typename FindPolicy, typename InsertionPolicy>
-class list : public detail::container<std::list, T, FindPolicy, InsertionPolicy>
+template<typename T, typename FindPolicy>
+class list : public detail::container<std::list, T, FindPolicy>
 {
 public:
-	list() : detail::container<std::list, T, FindPolicy, InsertionPolicy>()
+	list() : detail::container<std::list, T, FindPolicy>()
 	{}
 
 	template<typename InputIt>
-	list(InputIt first, InputIt last) : detail::container<std::list, T, FindPolicy, InsertionPolicy>(first, last)
+	list(InputIt first, InputIt last) : detail::container<std::list, T, FindPolicy>(first, last)
 	{}
+
+	typename detail::container<std::list, T, FindPolicy>::iterator push_front(const T& value)
+	{
+		c_.push_front(value);
+	}
 };
 
 template<typename T>
-class list<T, find_policy::count, insertion_policy::count> : public detail::container<std::list, T, find_policy::count, insertion_policy::count>
+class list<T, find_policy::count> : public detail::container<std::list, T, find_policy::count>
 {
 public:
-	list() : detail::container<std::list, T, find_policy::count, insertion_policy::count>()
+	list() : detail::container<std::list, T, find_policy::count>()
 	{}
 
 	template<typename InputIt>
-	list(InputIt first, InputIt last) : detail::container<std::list, T, find_policy::count, insertion_policy::count>(first, last)
+	list(InputIt first, InputIt last) : detail::container<std::list, T, find_policy::count>(first, last)
 	{}
 };
 
-template<typename T, typename FindPolicy, typename InsertionPolicy>
-class vector : public detail::container<std::vector, T, FindPolicy, InsertionPolicy>
+template<typename T, typename FindPolicy>
+class vector : public detail::container<std::vector, T, FindPolicy>
 {
 public:
-	vector() : detail::container<std::vector, T, FindPolicy, InsertionPolicy>()
+	vector() : detail::container<std::vector, T, FindPolicy>()
 	{}
 
 	template<typename InputIt>
-	vector(InputIt first, InputIt last) : detail::container<std::vector, T, FindPolicy, InsertionPolicy>(first, last)
+	vector(InputIt first, InputIt last) : detail::container<std::vector, T, FindPolicy>(first, last)
 	{}
+
+	typename detail::container<std::list, T, FindPolicy>::iterator push_front(const T& value)
+	{
+		c_.insert(c_.begin(), value);
+	}
 };
 
 template<typename T>
-class vector<T, find_policy::count, insertion_policy::count> : public detail::container<std::vector, T, find_policy::count, insertion_policy::count>
+class vector<T, find_policy::count> : public detail::container<std::vector, T, find_policy::count>
 {
 public:
-	vector() : detail::container<std::vector, T, find_policy::count, insertion_policy::count>()
+	vector() : detail::container<std::vector, T, find_policy::count>()
 	{}
 
 	template<typename InputIt>
-	vector(InputIt first, InputIt last) : detail::container<std::vector, T, find_policy::count, insertion_policy::count>(first, last)
+	vector(InputIt first, InputIt last) : detail::container<std::vector, T, find_policy::count>(first, last)
 	{}
 };
 

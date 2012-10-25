@@ -16,44 +16,41 @@ namespace so = self_organizing;
 const array<int, 8> zero_to_seven = {0, 1, 2, 3, 4, 5, 6, 7};
 
 template<typename Container>
-void empty()
+void default_constructor()
 {
 	Container c;
-
-	REQUIRE(c.size() == 0);
-	REQUIRE(c.begin() == c.end());
 }
 
-TEST_CASE("correctness/empty", "Empty container has size 0 and begin() equals end().")
+TEST_CASE("correctness/default_constructor", "Dummy test. Confirms compilation is successful.")
 {
 	SECTION("list<int, count, count>", "list<int, count, count>")
 	{
-		empty<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
+		default_constructor<so::list<int, so::find_policy::count>>();
 	}
 
-	SECTION("list<int, move_to_front, insert_front>", "list<int, move_to_front, insert_front>")
+	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
 	{
-		empty<so::list<int, so::find_policy::move_to_front, so::insertion_policy::insert_front>>();
+		default_constructor<so::list<int, so::find_policy::move_to_front>>();
 	}
 	
-	SECTION("list<int, transpose, insert_back>", "list<int, transpose, insert_back>")
+	SECTION("list<int, transpose>", "list<int, transpose>")
 	{
-		empty<so::list<int, so::find_policy::transpose, so::insertion_policy::insert_back>>();
+		default_constructor<so::list<int, so::find_policy::transpose>>();
 	}
 
 	SECTION("vector<int, count, count>", "vector<int, count, count>")
 	{
-		empty<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
+		default_constructor<so::vector<int, so::find_policy::count>>();
 	}
 
-	SECTION("vector<int, move_to_front, insert_front>", "vector<int, move_to_front, insert_front>")
+	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
 	{
-		empty<so::vector<int, so::find_policy::move_to_front, so::insertion_policy::insert_front>>();
+		default_constructor<so::vector<int, so::find_policy::move_to_front>>();
 	}
 	
-	SECTION("vector<int, transpose, insert_back>", "vector<int, transpose, insert_back>")
+	SECTION("vector<int, transpose>", "vector<int, transpose>")
 	{
-		empty<so::vector<int, so::find_policy::transpose, so::insertion_policy::insert_back>>();
+		default_constructor<so::vector<int, so::find_policy::transpose>>();
 	}
 }
 
@@ -65,36 +62,36 @@ void range_constructor()
 	CHECK(equal(begin(c), end(c), begin(zero_to_seven)));
 }
 
-TEST_CASE("correctness/range_constructor", "Constructing container with range equals range.")
+TEST_CASE("correctness/range_constructor", "Range-constructing container equals range.")
 {
 	SECTION("list<int, count, count>", "list<int, count, count>")
 	{
-		range_constructor<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
+		range_constructor<so::list<int, so::find_policy::count>>();
 	}
 
-	SECTION("list<int, move_to_front, insert_front>", "list<int, move_to_front, insert_front>")
+	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
 	{
-		range_constructor<so::list<int, so::find_policy::move_to_front, so::insertion_policy::insert_front>>();
+		range_constructor<so::list<int, so::find_policy::move_to_front>>();
 	}
 	
-	SECTION("list<int, transpose, insert_back>", "list<int, transpose, insert_back>")
+	SECTION("list<int, transpose>", "list<int, transpose>")
 	{
-		range_constructor<so::list<int, so::find_policy::transpose, so::insertion_policy::insert_back>>();
+		range_constructor<so::list<int, so::find_policy::transpose>>();
 	}
 
 	SECTION("vector<int, count, count>", "vector<int, count, count>")
 	{
-		range_constructor<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
+		range_constructor<so::vector<int, so::find_policy::count>>();
 	}
 
-	SECTION("vector<int, move_to_front, insert_front>", "vector<int, move_to_front, insert_front>")
+	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
 	{
-		range_constructor<so::vector<int, so::find_policy::move_to_front, so::insertion_policy::insert_front>>();
+		range_constructor<so::vector<int, so::find_policy::move_to_front>>();
 	}
 	
-	SECTION("vector<int, transpose, insert_back>", "vector<int, transpose, insert_back>")
+	SECTION("vector<int, transpose>", "vector<int, transpose>")
 	{
-		range_constructor<so::vector<int, so::find_policy::transpose, so::insertion_policy::insert_back>>();
+		range_constructor<so::vector<int, so::find_policy::transpose>>();
 	}
 }
 
@@ -110,66 +107,74 @@ TEST_CASE("correctness/copy_constructor", "Copy-constructing container equals co
 {
 	SECTION("list<int, count, count>", "list<int, count, count>")
 	{
-		copy_constructor<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
+		copy_constructor<so::list<int, so::find_policy::count>>();
 	}
 
-	SECTION("list<int, move_to_front, insert_front>", "list<int, move_to_front, insert_front>")
+	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
 	{
-		copy_constructor<so::list<int, so::find_policy::move_to_front, so::insertion_policy::insert_front>>();
+		copy_constructor<so::list<int, so::find_policy::move_to_front>>();
 	}
 	
-	SECTION("list<int, transpose, insert_back>", "list<int, transpose, insert_back>")
+	SECTION("list<int, transpose>", "list<int, transpose>")
 	{
-		copy_constructor<so::list<int, so::find_policy::transpose, so::insertion_policy::insert_back>>();
+		copy_constructor<so::list<int, so::find_policy::transpose>>();
 	}
 
 	SECTION("vector<int, count, count>", "vector<int, count, count>")
 	{
-		copy_constructor<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
+		copy_constructor<so::vector<int, so::find_policy::count>>();
 	}
 
-	SECTION("vector<int, move_to_front, insert_front>", "vector<int, move_to_front, insert_front>")
+	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
 	{
-		copy_constructor<so::vector<int, so::find_policy::move_to_front, so::insertion_policy::insert_front>>();
+		copy_constructor<so::vector<int, so::find_policy::move_to_front>>();
 	}
 	
-	SECTION("vector<int, transpose, insert_back>", "vector<int, transpose, insert_back>")
+	SECTION("vector<int, transpose>", "vector<int, transpose>")
 	{
-		copy_constructor<so::vector<int, so::find_policy::transpose, so::insertion_policy::insert_back>>();
+		copy_constructor<so::vector<int, so::find_policy::transpose>>();
 	}
 }
-/*
-TEST_CASE("correctness/insert", "Container equals insert values.")
+
+template<typename Container>
+void front_back()
+{
+	Container c(begin(zero_to_seven), end(zero_to_seven));
+
+	REQUIRE(c.front() == 0);
+	REQUIRE(c.back() == 7);
+}
+
+TEST_CASE("correctness/front_and_back", "Front and back values of constructed container.")
 {
 	SECTION("list<int, count, count>", "list<int, count, count>")
 	{
-		so::list<int, so::find_policy::count, so::insertion_policy::count> l(begin(zero_to_seven), end(zero_to_seven));
-
+		front_back<so::list<int, so::find_policy::count>>();
 	}
 
-	SECTION("list<int, move_to_front, insert_front>", "list<int, move_to_front, insert_front>")
+	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
 	{
-		insert<so::list<int, so::find_policy::move_to_front, so::insertion_policy::insert_front>>();
+		front_back<so::list<int, so::find_policy::move_to_front>>();
 	}
 	
-	SECTION("list<int, transpose, insert_back>", "list<int, transpose, insert_back>")
+	SECTION("list<int, transpose>", "list<int, transpose>")
 	{
-		insert<so::list<int, so::find_policy::transpose, so::insertion_policy::insert_back>>();
+		front_back<so::list<int, so::find_policy::transpose>>();
 	}
 
 	SECTION("vector<int, count, count>", "vector<int, count, count>")
 	{
-		insert<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
+		front_back<so::vector<int, so::find_policy::count>>();
 	}
 
-	SECTION("vector<int, move_to_front, insert_front>", "vector<int, move_to_front, insert_front>")
+	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
 	{
-		insert<so::vector<int, so::find_policy::move_to_front, so::insertion_policy::insert_front>>();
+		front_back<so::vector<int, so::find_policy::move_to_front>>();
 	}
 	
-	SECTION("vector<int, transpose, insert_back>", "vector<int, transpose, insert_back>")
+	SECTION("vector<int, transpose>", "vector<int, transpose>")
 	{
-		insert<so::vector<int, so::find_policy::transpose, so::insertion_policy::insert_back>>();
+		front_back<so::vector<int, so::find_policy::transpose>>();
 	}
 }
 
@@ -187,12 +192,12 @@ bool size()
 
 bool size_list()
 {
-	return size<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
+	return size<so::list<int, so::find_policy::count>>();
 }
 
 bool size_vector()
 {
-	return size<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
+	return size<so::vector<int, so::find_policy::count>>();
 }
 
 template<typename Container>
@@ -217,12 +222,12 @@ bool front_back()
 
 bool front_back_list()
 {
-	return front_back<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
+	return front_back<so::list<int, so::find_policy::count>>();
 }
 
 bool front_back_vector()
 {
-	return front_back<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
+	return front_back<so::vector<int, so::find_policy::count>>();
 }
 
 template<typename Container>
@@ -249,12 +254,12 @@ bool clear()
 
 bool clear_list()
 {
-	return clear<so::list<int, so::find_policy::count, so::insertion_policy::count>>();
+	return clear<so::list<int, so::find_policy::count>>();
 }
 
 bool clear_vector()
 {
-	return clear<so::vector<int, so::find_policy::count, so::insertion_policy::count>>();
+	return clear<so::vector<int, so::find_policy::count>>();
 }
 
 template<typename Container>
@@ -283,37 +288,37 @@ bool final_order(const array<int, 8> final_order)
 bool final_order_list_count()
 {
 	const array<int, 8> order = {5, 6, 3, 4, 0, 1, 2, 7};
-	return final_order<so::list<int, so::find_policy::count, so::insertion_policy::count>>(order);
+	return final_order<so::list<int, so::find_policy::count>>(order);
 }
 
 bool final_order_list_move_to_front()
 {
 	const array<int, 8> order = {4, 6, 5, 3, 0, 1, 2, 7};
-	return final_order<so::list<int, so::find_policy::move_to_front, so::insertion_policy::insert_back>>(order);
+	return final_order<so::list<int, so::find_policy::move_to_front>>(order);
 }
 
 bool final_order_list_transpose()
 {
 	const array<int, 8> order = {0, 1, 5, 3, 6, 4, 2, 7};
-	return final_order<so::list<int, so::find_policy::transpose, so::insertion_policy::insert_back>>(order);
+	return final_order<so::list<int, so::find_policy::transpose>>(order);
 }
 
 bool final_order_vector_count()
 {
 	const array<int, 8> order = {5, 6, 3, 4, 0, 1, 2, 7};
-	return final_order<so::vector<int, so::find_policy::count, so::insertion_policy::count>>(order);
+	return final_order<so::vector<int, so::find_policy::count>>(order);
 }
 
 bool final_order_vector_move_to_front()
 {
 	const array<int, 8> order = {4, 6, 5, 3, 0, 1, 2, 7};
-	return final_order<so::vector<int, so::find_policy::move_to_front, so::insertion_policy::insert_back>>(order);
+	return final_order<so::vector<int, so::find_policy::move_to_front>>(order);
 }
 
 bool final_order_vector_transpose()
 {
 	const array<int, 8> order = {0, 1, 5, 3, 6, 4, 2, 7};
-	return final_order<so::vector<int, so::find_policy::transpose, so::insertion_policy::insert_back>>(order);
+	return final_order<so::vector<int, so::find_policy::transpose>>(order);
 }
 
 

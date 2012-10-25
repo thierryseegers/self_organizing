@@ -12,11 +12,11 @@ int main()
 
 	int data[] = {0, 1, 2, 3, 4, 5, 6, 7};
 
-//	so::list<int, so::find_policy::transpose, so::insertion_policy::insert_back> soci;
-//	so::list<int, so::find_policy::count, so::insertion_policy::count> soci;
-	so::vector<int, so::find_policy::count, so::insertion_policy::count> soci;
+	so::list<int, so::find_policy::transpose> soci(begin(data), end(data));
+//	so::list<int, so::find_policy::count> soci(begin(data), end(data));
+//	so::vector<int, so::find_policy::count> soci(begin(data), end(data));
 
-	soci.insert(begin(data), end(data));
+	soci.push_back(8);
 
 	copy(soci.begin(), soci.end(), ostream_iterator<int>(cout, " "));
 	cout << endl;
