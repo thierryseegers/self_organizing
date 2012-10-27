@@ -17,6 +17,9 @@ const array<int, 8> zero_to_seven = {0, 1, 2, 3, 4, 5, 6, 7};
 
 #define API_TEST_CASE(name, description, function)						\
 																		\
+template<typename Container>											\
+void function();														\
+																		\
 TEST_CASE(name, description)											\
 {																		\
 	SECTION("list<int, count, count>", "list<int, count, count>")		\
@@ -49,37 +52,31 @@ TEST_CASE(name, description)											\
 		function<so::vector<int, so::find_policy::transpose>>();		\
 	}																	\
 }																		\
+																		\
+template<typename Container>											\
+void function()
 
-template<typename Container>
-void default_constructor()
+
+API_TEST_CASE("API/default_constructor", "Dummy test. Confirms compilation is successful.", default_constructor)
 {
 	Container c;
 }
 
-API_TEST_CASE("API/default_constructor", "Dummy test. Confirms compilation is successful.", default_constructor);
-
-template<typename Container>
-void range_constructor()
+API_TEST_CASE("API/range_constructor", "Range-constructing container equals range.", range_constructor)
 {
 	Container c(begin(zero_to_seven), end(zero_to_seven));
 
 	CHECK(equal(begin(c), end(c), begin(zero_to_seven)));
 }
 
-API_TEST_CASE("API/range_constructor", "Range-constructing container equals range.", range_constructor);
-
-template<typename Container>
-void copy_constructor()
+API_TEST_CASE("API/copy_constructor", "Copy-constructing container equals copy.", copy_constructor)
 {
 	Container c(begin(zero_to_seven), end(zero_to_seven)), copy(c);
 
 	CHECK(equal(begin(c), end(c), begin(copy)));
 }
 
-API_TEST_CASE("API/copy_constructor", "Copy-constructing container equals copy.", copy_constructor);
-
-template<typename Container>
-void front_back()
+API_TEST_CASE("API/front_and_back", "Front and back values of constructed container.", front_back)
 {
 	Container c(begin(zero_to_seven), end(zero_to_seven));
 
@@ -87,20 +84,14 @@ void front_back()
 	REQUIRE(c.back() == 7);
 }
 
-API_TEST_CASE("API/front_and_back", "Front and back values of constructed container.", front_back);
-
-template<typename Container>
-void empty()
+API_TEST_CASE("API/empty", "Empty is true for default container.", empty)
 {
 	Container c;
 
 	REQUIRE(c.empty() == true);
 }
 
-API_TEST_CASE("API/empty", "Empty is true for default container.", empty);
-
-template<typename Container>
-void size()
+API_TEST_CASE("API/size", "Size of constructed container is correct.", size)
 {
 	{
 		Container c;
@@ -115,10 +106,7 @@ void size()
 	}
 }
 
-API_TEST_CASE("API/size", "Size of constructed container is correct.", size);
-
-template<typename Container>
-void clear()
+API_TEST_CASE("API/clear", "Size of cleared container is 0.", clear)
 {
 	Container c(begin(zero_to_seven), end(zero_to_seven));
 	c.clear();
@@ -126,10 +114,7 @@ void clear()
 	REQUIRE(c.size() == 0);
 }
 
-API_TEST_CASE("API/clear", "Size of cleared container is 0.", clear);
-
-template<typename Container>
-void erase()
+API_TEST_CASE("API/erase", "Container shrinks as elements are erased.", erase)
 {
 	Container c(begin(zero_to_seven), end(zero_to_seven));
 	Container::iterator i = c.erase(c.begin());
@@ -145,10 +130,7 @@ void erase()
 	REQUIRE(i == c.end());
 }
 
-API_TEST_CASE("API/erase", "Container shrinks as elements are erased.", erase);
-
-template<typename Container>
-void push_back()
+API_TEST_CASE("API/push_back", "Size of cleared container is 0.", push_back)
 {
 	Container c;
 	for(const auto& a : zero_to_seven)
@@ -159,10 +141,7 @@ void push_back()
 	REQUIRE(equal(c.begin(), c.end(), zero_to_seven.begin()));
 }
 
-API_TEST_CASE("API/push_back", "Size of cleared container is 0.", push_back);
-
-template<typename Container>
-void find()
+API_TEST_CASE("API/find", "Elements from container can be found. Elements not from caontainer cannot be found.", find)
 {
 	Container c(begin(zero_to_seven), end(zero_to_seven));
 	Container::iterator i;
@@ -177,10 +156,7 @@ void find()
 	REQUIRE(i == c.end());
 }
 
-API_TEST_CASE("API/find", "Elements from container can be found. Elements not from caontainer cannot be found.", find);
-
-template<typename Container>
-void find_if()
+API_TEST_CASE("API/find_if", "Elements from container can be found with a predicate. Elements not from caontainer cannot be found.", find_if)
 {
 	Container c(begin(zero_to_seven), end(zero_to_seven));
 	Container::iterator i;
@@ -196,7 +172,6 @@ void find_if()
 }
 
 
-API_TEST_CASE("API/find_if", "The find_if test", find_if);
 
 /*
 template<typename Container>
