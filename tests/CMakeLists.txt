@@ -23,10 +23,7 @@ add_test(API/push_back correctness API/push_back)
 add_test(API/find correctness API/find)
 add_test(API/find_if correctness API/find_if)
 
-#add_test(final_order_list_count correctness final_order_list_count)
-#add_test(final_order_list_move_to_front correctness final_order_list_move_to_front)
-#add_test(final_order_list_transpose correctness final_order_list_transpose)
-#add_test(final_order_vector_count correctness final_order_vector_count)
-#add_test(final_order_vector_move_to_front correctness final_order_vector_move_to_front)
-#add_test(final_order_vector_transpose correctness final_order_vector_transpose)
-
+# Policy tests.
+add_test(policy/count correctness policy/count)
+add_test(policy/transpose correctness policy/transpose)
+add_test(policy/move_to_front correctness policy/move_to_front)

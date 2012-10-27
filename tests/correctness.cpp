@@ -172,156 +172,60 @@ API_TEST_CASE("API/find_if", "Elements from container can be found with a predic
 }
 
 
-
-/*
 template<typename Container>
-bool final_order(const array<int, 8> final_order)
+bool policy_check(const vector<int> starting_order, const vector<int> find_order, const vector<int> final_order)
 {
-	Container c;
+	Container c(begin(starting_order), end(starting_order));
 
-	c.insert(begin(zero_to_seven), end(zero_to_seven));
+	for(const auto& i : find_order)
+	{
+		c.find(i);
+	}
 
-	c.find(5);
-	c.find(3);
-	c.find(5);
-	c.find(6);
-	c.find(4);
-	c.find(6);
-	c.find(5);
-	c.find(0);
-	c.find(3);
-	c.find(5);
-	c.find(6);
-	c.find(4);
-
-	return equal(begin(c), end(c), begin(final_order));
+	CHECK(equal(begin(c), end(c), begin(final_order)));
 }
 
-bool final_order_list_count()
+TEST_CASE("policy/count", "")
 {
-	const array<int, 8> order = {5, 6, 3, 4, 0, 1, 2, 7};
-	return final_order<so::list<int, so::find_policy::count>>(order);
+	const int starting_order[] = {0, 1, 2, 3, 4, 5, 6, 7}, 
+			  find_order[] = {5, 3, 5, 6, 4, 6, 5, 0, 3, 5, 6, 4}, 
+			  final_order[] = {5, 6, 3, 4, 0, 1, 2, 7};
+
+	policy_check<so::list<int, so::find_policy::count>>(vector<int>(begin(starting_order), end(starting_order)), 
+														vector<int>(begin(find_order), end(find_order)),
+														vector<int>(begin(final_order), end(final_order)));
+
+	policy_check<so::vector<int, so::find_policy::count>>(vector<int>(begin(starting_order), end(starting_order)), 
+														  vector<int>(begin(find_order), end(find_order)),
+														  vector<int>(begin(final_order), end(final_order)));
 }
 
-bool final_order_list_move_to_front()
+TEST_CASE("policy/move_to_front", "")
 {
-	const array<int, 8> order = {4, 6, 5, 3, 0, 1, 2, 7};
-	return final_order<so::list<int, so::find_policy::move_to_front>>(order);
+	const int starting_order[] = {0, 1, 2, 3, 4, 5, 6, 7}, 
+			  find_order[] = {5, 3, 5, 6, 4, 6, 5, 0, 3, 5, 6, 4}, 
+			  final_order[] = {4, 6, 5, 3, 0, 1, 2, 7};
+
+	policy_check<so::list<int, so::find_policy::move_to_front>>(vector<int>(begin(starting_order), end(starting_order)), 
+																vector<int>(begin(find_order), end(find_order)),
+																vector<int>(begin(final_order), end(final_order)));
+
+	policy_check<so::vector<int, so::find_policy::move_to_front>>(vector<int>(begin(starting_order), end(starting_order)), 
+																  vector<int>(begin(find_order), end(find_order)),
+																  vector<int>(begin(final_order), end(final_order)));
 }
 
-bool final_order_list_transpose()
+TEST_CASE("policy/transpose", "")
 {
-	const array<int, 8> order = {0, 1, 5, 3, 6, 4, 2, 7};
-	return final_order<so::list<int, so::find_policy::transpose>>(order);
+	const int starting_order[] = {0, 1, 2, 3, 4, 5, 6, 7}, 
+			  find_order[] = {5, 3, 5, 6, 4, 6, 5, 0, 3, 5, 6, 4}, 
+			  final_order[] = {0, 1, 5, 3, 6, 4, 2, 7};
+
+	policy_check<so::list<int, so::find_policy::transpose>>(vector<int>(begin(starting_order), end(starting_order)), 
+															vector<int>(begin(find_order), end(find_order)),
+															vector<int>(begin(final_order), end(final_order)));
+
+	policy_check<so::vector<int, so::find_policy::transpose>>(vector<int>(begin(starting_order), end(starting_order)), 
+																vector<int>(begin(find_order), end(find_order)),
+																vector<int>(begin(final_order), end(final_order)));
 }
-
-bool final_order_vector_count()
-{
-	const array<int, 8> order = {5, 6, 3, 4, 0, 1, 2, 7};
-	return final_order<so::vector<int, so::find_policy::count>>(order);
-}
-
-bool final_order_vector_move_to_front()
-{
-	const array<int, 8> order = {4, 6, 5, 3, 0, 1, 2, 7};
-	return final_order<so::vector<int, so::find_policy::move_to_front>>(order);
-}
-
-bool final_order_vector_transpose()
-{
-	const array<int, 8> order = {0, 1, 5, 3, 6, 4, 2, 7};
-	return final_order<so::vector<int, so::find_policy::transpose>>(order);
-}
-
-
-
-TEST_CASE( "stupid/1=2", "Prove that one equals 2" )
-{
-    int one = 1;
-    REQUIRE( one == 2 );
-	CHECK( one == 2 );
-}
-
-TEST_CASE( "example/less than 7", "The number is less than 7" )
-{
-    int notThisOne = 7;
-
-    for( int i=0; i < 7; ++i )
-    {
-        REQUIRE( notThisOne > i+1  );
-    }
-}
-*/
-/*
-int main(int argc, char* argv[])
-{
-	bool b = false;
-
-	if(strcmp(argv[1], "empty_list") == 0)
-	{
-		b = empty_list();
-	}
-	else if(strcmp(argv[1], "empty_vector") == 0)
-	{
-		b = empty_vector();
-	}
-	else if(strcmp(argv[1], "insert_list") == 0)
-	{
-		b = insert_list();
-	}
-	else if(strcmp(argv[1], "insert_vector") == 0)
-	{
-		b = insert_vector();
-	}
-	else if(strcmp(argv[1], "size_list") == 0)
-	{
-		b = size_list();
-	}
-	else if(strcmp(argv[1], "size_vector") == 0)
-	{
-		b = size_vector();
-	}
-	else if(strcmp(argv[1], "front_back_list") == 0)
-	{
-		b = front_back_list();
-	}
-	else if(strcmp(argv[1], "front_back_vector") == 0)
-	{
-		b = front_back_vector();
-	}
-	else if(strcmp(argv[1], "clear_list") == 0)
-	{
-		b = size_list();
-	}
-	else if(strcmp(argv[1], "clear_vector") == 0)
-	{
-		b = size_vector();
-	}
-	else if(strcmp(argv[1], "final_order_list_count") == 0)
-	{
-		b = final_order_list_count();
-	}
-	else if(strcmp(argv[1], "final_order_list_move_to_front") == 0)
-	{
-		b = final_order_list_move_to_front();
-	}
-	else if(strcmp(argv[1], "final_order_list_transpose") == 0)
-	{
-		b = final_order_list_transpose();
-	}
-	else if(strcmp(argv[1], "final_order_vector_count") == 0)
-	{
-		b = final_order_vector_count();
-	}
-	else if(strcmp(argv[1], "final_order_vector_move_to_front") == 0)
-	{
-		b = final_order_vector_move_to_front();
-	}
-	else if(strcmp(argv[1], "final_order_vector_transpose") == 0)
-	{
-		b = final_order_vector_transpose();
-	}
-
-	return b ? 0 : 1;
-}
-*/
