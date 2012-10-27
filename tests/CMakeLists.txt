@@ -19,13 +19,10 @@ add_test(API/empty correctness API/empty)
 add_test(API/size correctness API/size)
 add_test(API/clear correctness API/clear)
 add_test(API/erase correctness API/erase)
+add_test(API/push_back correctness API/push_back)
+add_test(API/find correctness API/find)
+add_test(API/find_if correctness API/find_if)
 
-#add_test(size_list correctness size_list)
-#add_test(size_vector correctness size_vector)
-#
-#add_test(clear_list correctness clear_list)
-#add_test(clear_vector correctness clear_vector)
-#
 #add_test(final_order_list_count correctness final_order_list_count)
 #add_test(final_order_list_move_to_front correctness final_order_list_move_to_front)
 #add_test(final_order_list_transpose correctness final_order_list_transpose)

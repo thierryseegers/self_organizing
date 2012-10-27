@@ -320,43 +320,186 @@ void erase()
 	REQUIRE(c.front() == 1);
 	REQUIRE(i == c.begin());
 
-	i = c.erase(c.begin());
+	i = c.erase(c.begin(), c.end());
 
-	REQUIRE(c.size() == 6);
-	REQUIRE(c.front() == 2);
+	REQUIRE(c.empty() == true);
 	REQUIRE(i == c.begin());
+	REQUIRE(i == c.end());
 }
 
 TEST_CASE("API/erase", "Container shrinks as elements are erased.")
 {
 	SECTION("list<int, count, count>", "list<int, count, count>")
 	{
-		clear<so::list<int, so::find_policy::count>>();
+		erase<so::list<int, so::find_policy::count>>();
 	}
 
 	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
 	{
-		clear<so::list<int, so::find_policy::move_to_front>>();
+		erase<so::list<int, so::find_policy::move_to_front>>();
 	}
 	
 	SECTION("list<int, transpose>", "list<int, transpose>")
 	{
-		clear<so::list<int, so::find_policy::transpose>>();
+		erase<so::list<int, so::find_policy::transpose>>();
 	}
 
 	SECTION("vector<int, count, count>", "vector<int, count, count>")
 	{
-		clear<so::vector<int, so::find_policy::count>>();
+		erase<so::vector<int, so::find_policy::count>>();
 	}
 
 	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
 	{
-		clear<so::vector<int, so::find_policy::move_to_front>>();
+		erase<so::vector<int, so::find_policy::move_to_front>>();
 	}
 	
 	SECTION("vector<int, transpose>", "vector<int, transpose>")
 	{
-		clear<so::vector<int, so::find_policy::transpose>>();
+		erase<so::vector<int, so::find_policy::transpose>>();
+	}
+}
+
+template<typename Container>
+void push_back()
+{
+	Container c;
+	for(const auto& a : zero_to_seven)
+	{
+		c.push_back(a);
+	}
+
+	REQUIRE(equal(c.begin(), c.end(), zero_to_seven.begin()));
+}
+
+TEST_CASE("API/push_back", "Size of cleared container is 0.")
+{
+	SECTION("list<int, count, count>", "list<int, count, count>")
+	{
+		push_back<so::list<int, so::find_policy::count>>();
+	}
+
+	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
+	{
+		push_back<so::list<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("list<int, transpose>", "list<int, transpose>")
+	{
+		push_back<so::list<int, so::find_policy::transpose>>();
+	}
+
+	SECTION("vector<int, count, count>", "vector<int, count, count>")
+	{
+		push_back<so::vector<int, so::find_policy::count>>();
+	}
+
+	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
+	{
+		push_back<so::vector<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("vector<int, transpose>", "vector<int, transpose>")
+	{
+		push_back<so::vector<int, so::find_policy::transpose>>();
+	}
+}
+
+template<typename Container>
+void find()
+{
+	Container c(begin(zero_to_seven), end(zero_to_seven));
+	Container::iterator i;
+
+	for(const auto& a : zero_to_seven)
+	{
+		i = c.find(a);
+		REQUIRE(i != c.end());
+	}
+
+	i = c.find(8);
+	REQUIRE(i == c.end());
+}
+
+TEST_CASE("API/find", "Elements from container can be found. Elements not from caontainer cannot be found.")
+{
+	SECTION("list<int, count, count>", "list<int, count, count>")
+	{
+		find<so::list<int, so::find_policy::count>>();
+	}
+
+	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
+	{
+		find<so::list<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("list<int, transpose>", "list<int, transpose>")
+	{
+		find<so::list<int, so::find_policy::transpose>>();
+	}
+
+	SECTION("vector<int, count, count>", "vector<int, count, count>")
+	{
+		find<so::vector<int, so::find_policy::count>>();
+	}
+
+	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
+	{
+		find<so::vector<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("vector<int, transpose>", "vector<int, transpose>")
+	{
+		find<so::vector<int, so::find_policy::transpose>>();
+	}
+}
+
+template<typename Container>
+void find_if()
+{
+	Container c(begin(zero_to_seven), end(zero_to_seven));
+	Container::iterator i;
+
+	for(const auto& a : zero_to_seven)
+	{
+		i = c.find_if([a](const Container::value_type& v){ return v == a; });
+		REQUIRE(i != c.end());
+	}
+
+	i = c.find_if([](const Container::value_type& v){ return v == 8; });
+	REQUIRE(i == c.end());
+}
+
+TEST_CASE("API/find_if", "Elements from container can be found. Elements not from caontainer cannot be found.")
+{
+	SECTION("list<int, count, count>", "list<int, count, count>")
+	{
+		find_if<so::list<int, so::find_policy::count>>();
+	}
+
+	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
+	{
+		find_if<so::list<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("list<int, transpose>", "list<int, transpose>")
+	{
+		find_if<so::list<int, so::find_policy::transpose>>();
+	}
+
+	SECTION("vector<int, count, count>", "vector<int, count, count>")
+	{
+		find_if<so::vector<int, so::find_policy::count>>();
+	}
+
+	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
+	{
+		find_if<so::vector<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("vector<int, transpose>", "vector<int, transpose>")
+	{
+		find_if<so::vector<int, so::find_policy::transpose>>();
 	}
 }
 

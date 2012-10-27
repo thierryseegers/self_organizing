@@ -15,8 +15,8 @@ namespace find_policy
 {
 	struct count
 	{
-		template<typename Impl, typename T>
-		static typename Impl::iterator find(Impl& impl, const T& value)
+		template<typename Impl, typename F>
+		static typename Impl::iterator find_if(Impl& impl, const F& f)
 		{
 			typename Impl::iterator i = impl.begin(), h = i;
 
@@ -27,7 +27,7 @@ namespace find_policy
 					h = i;
 				}
 
-				if(i->second == value)
+				if(f(i->second))
 				{
 					break;
 				}
@@ -54,10 +54,10 @@ namespace find_policy
 
 	struct move_to_front
 	{
-		template<typename Impl, typename T>
-		static typename Impl::iterator find(Impl& impl, const T& value)
+		template<typename Impl, typename F>
+		static typename Impl::iterator find_if(Impl& impl, const F& f)
 		{
-			typename Impl::iterator i = std::find(impl.begin(), impl.end(), value);
+			typename Impl::iterator i = std::find_if(impl.begin(), impl.end(), f);
 			
 			if(i != impl.end())
 			{
@@ -73,10 +73,10 @@ namespace find_policy
 
 	struct transpose
 	{
-		template<typename Impl, typename T>
-		static typename Impl::iterator find(Impl& impl, const T& value)
+		template<typename Impl, typename F>
+		static typename Impl::iterator find_if(Impl& impl, const F& f)
 		{
-			typename Impl::iterator i = std::find(impl.begin(), impl.end(), value);
+			typename Impl::iterator i = std::find_if(impl.begin(), impl.end(), f);
 
 			if(i != impl.end() && i != impl.begin())
 			{
@@ -200,6 +200,16 @@ public:
 		return c_.erase(i);
 	}
 
+		iterator erase(iterator first, iterator last)
+	{
+		return c_.erase(first, last);
+	}
+
+	iterator erase(const_iterator first, const_iterator last)
+	{
+		return c_.erase(first, last);
+	}
+	 
 	void push_back(const value_type& value)
 	{
 		return c_.push_back(value);
@@ -207,7 +217,13 @@ public:
 
 	iterator find(const value_type& value)
 	{
-		return FindPolicy::find(c_, value);
+		return find_if([&value](const value_type& v){ return v == value; });
+	}
+
+	template<typename F>
+	iterator find_if(F f)
+	{
+		return FindPolicy::find_if(c_, f);
 	}
 };
 
@@ -227,13 +243,13 @@ public:
 	typedef typename T const* const_pointer;
 
 	template<typename U>
-	class const_iterator
+	class const_iterator_
 	{
 		typedef typename container<Container, U, find_policy::count>::impl_type::const_iterator impl_type;
 		typename impl_type i;
 
 	public:
-		typedef const_iterator<U> self_type;
+		typedef const_iterator_<U> self_type;
 		typedef std::bidirectional_iterator_tag iterator_category;
 
 		typedef U value_type;
@@ -241,13 +257,13 @@ public:
 		typedef U const* pointer;
 		typedef U const& reference;
 
-		const_iterator() {}
+		const_iterator_() {}
 
-		const_iterator(typename const self_type& o) : i(o.i) {}
+		const_iterator_(typename const self_type& o) : i(o.i) {}
 
-		const_iterator(typename impl_type i) : i(i) {}
+		const_iterator_(typename impl_type i) : i(i) {}
 
-		const_iterator(typename container<Container, U, find_policy::count>::impl_type::iterator i) : i(i) {}
+		const_iterator_(typename container<Container, U, find_policy::count>::impl_type::iterator i) : i(i) {}
 
 		operator typename impl_type()
 		{
@@ -293,13 +309,13 @@ public:
 	};
 
 	template<typename U>
-	class iterator
+	class iterator_
 	{
 		typedef typename container<Container, U, find_policy::count>::impl_type::iterator impl_type;
 		typename impl_type i;
 
 	public:
-		typedef typename iterator<U> self_type;
+		typedef typename iterator_<U> self_type;
 		typedef std::bidirectional_iterator_tag iterator_category;
 
 		typedef U value_type;
@@ -307,11 +323,11 @@ public:
 		typedef U* pointer;
 		typedef U& reference;
 
-		iterator() {}
+		iterator_() {}
 
-		iterator(const self_type& o) : i(o.i) {}
+		iterator_(const self_type& o) : i(o.i) {}
 
-		iterator(const impl_type& i) : i(i) {}
+		iterator_(const impl_type& i) : i(i) {}
 		
 		operator typename impl_type()
 		{
@@ -361,6 +377,9 @@ public:
 		}
 	};
 
+	typedef typename const_iterator_<T> const_iterator;
+	typedef typename iterator_<T> iterator;
+
 	container()
 	{}
 
@@ -393,32 +412,32 @@ public:
 		return *--cend();
 	}
 
-	iterator<T> begin()
+	iterator begin()
 	{
 		return c_.begin();
 	}
 
-	const_iterator<T> begin() const
+	const_iterator begin() const
 	{
 		return c_.begin();
 	}
 
-	const_iterator<T> cbegin() const
+	const_iterator cbegin() const
 	{
 		return c_.begin();
 	}
 
-	iterator<T> end()
+	iterator end()
 	{
 		return c_.end();
 	}
 
-	const_iterator<T> end() const
+	const_iterator end() const
 	{
 		return c_.end();
 	}
 
-	const_iterator<T> cend() const
+	const_iterator cend() const
 	{
 		return c_.end();
 	}
@@ -443,24 +462,40 @@ public:
 		c_.clear();
 	}
 
-	iterator<T> erase(iterator<T> i)
+	iterator erase(iterator i)
 	{
 		return c_.erase(i);
 	}
 
-	iterator<T> erase(const_iterator<T> i)
+	iterator erase(const_iterator i)
 	{
 		return c_.erase(i);
 	}
 	 
+	iterator erase(iterator first, iterator last)
+	{
+		return c_.erase(first, last);
+	}
+
+	iterator erase(const_iterator first, const_iterator last)
+	{
+		return c_.erase(first, last);
+	}
+
 	void push_back(const value_type& value)
 	{
 		return c_.push_back(std::make_pair(0, value));
 	}
 
-	iterator<T> find(const value_type& value)
+	iterator find(const value_type& value)
 	{
-		return find_policy::count::find(c_, value);
+		return find_if([&value](const value_type& v){ return v == value; });
+	}
+
+	template<typename F>
+	iterator find_if(F f)
+	{
+		return find_policy::count::find_if(c_, f);
 	}
 };
 
