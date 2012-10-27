@@ -403,12 +403,22 @@ public:
 		return c_.begin();
 	}
 
+	const_iterator<T> cbegin() const
+	{
+		return c_.begin();
+	}
+
 	iterator<T> end()
 	{
 		return c_.end();
 	}
 
 	const_iterator<T> end() const
+	{
+		return c_.end();
+	}
+
+	const_iterator<T> cend() const
 	{
 		return c_.end();
 	}
@@ -442,7 +452,7 @@ public:
 	{
 		return c_.erase(i);
 	}
-
+	 
 	void push_back(const value_type& value)
 	{
 		return c_.push_back(std::make_pair(0, value));

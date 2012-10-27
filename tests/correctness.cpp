@@ -21,7 +21,7 @@ void default_constructor()
 	Container c;
 }
 
-TEST_CASE("correctness/default_constructor", "Dummy test. Confirms compilation is successful.")
+TEST_CASE("API/default_constructor", "Dummy test. Confirms compilation is successful.")
 {
 	SECTION("list<int, count, count>", "list<int, count, count>")
 	{
@@ -62,7 +62,7 @@ void range_constructor()
 	CHECK(equal(begin(c), end(c), begin(zero_to_seven)));
 }
 
-TEST_CASE("correctness/range_constructor", "Range-constructing container equals range.")
+TEST_CASE("API/range_constructor", "Range-constructing container equals range.")
 {
 	SECTION("list<int, count, count>", "list<int, count, count>")
 	{
@@ -103,7 +103,7 @@ void copy_constructor()
 	CHECK(equal(begin(c), end(c), begin(copy)));
 }
 
-TEST_CASE("correctness/copy_constructor", "Copy-constructing container equals copy.")
+TEST_CASE("API/copy_constructor", "Copy-constructing container equals copy.")
 {
 	SECTION("list<int, count, count>", "list<int, count, count>")
 	{
@@ -145,7 +145,7 @@ void front_back()
 	REQUIRE(c.back() == 7);
 }
 
-TEST_CASE("correctness/front_and_back", "Front and back values of constructed container.")
+TEST_CASE("API/front_and_back", "Front and back values of constructed container.")
 {
 	SECTION("list<int, count, count>", "list<int, count, count>")
 	{
@@ -178,90 +178,189 @@ TEST_CASE("correctness/front_and_back", "Front and back values of constructed co
 	}
 }
 
-/*
-
 template<typename Container>
-bool size()
+void empty()
 {
 	Container c;
 
-	c.insert(begin(zero_to_seven), end(zero_to_seven));
-
-	return c.size() == 8;
+	REQUIRE(c.empty() == true);
 }
 
-bool size_list()
+TEST_CASE("API/empty", "Empty is true for default container.")
 {
-	return size<so::list<int, so::find_policy::count>>();
-}
-
-bool size_vector()
-{
-	return size<so::vector<int, so::find_policy::count>>();
-}
-
-template<typename Container>
-bool front_back()
-{
-	Container c;
-
-	c.insert(begin(zero_to_seven), end(zero_to_seven));
-
-	if(c.front() != 0)
+	SECTION("list<int, count, count>", "list<int, count, count>")
 	{
-		return false;
+		empty<so::list<int, so::find_policy::count>>();
 	}
 
-	if(c.back() != 7)
+	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
 	{
-		return false;
+		empty<so::list<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("list<int, transpose>", "list<int, transpose>")
+	{
+		empty<so::list<int, so::find_policy::transpose>>();
 	}
 
-	return true;
-}
+	SECTION("vector<int, count, count>", "vector<int, count, count>")
+	{
+		empty<so::vector<int, so::find_policy::count>>();
+	}
 
-bool front_back_list()
-{
-	return front_back<so::list<int, so::find_policy::count>>();
-}
-
-bool front_back_vector()
-{
-	return front_back<so::vector<int, so::find_policy::count>>();
+	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
+	{
+		empty<so::vector<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("vector<int, transpose>", "vector<int, transpose>")
+	{
+		empty<so::vector<int, so::find_policy::transpose>>();
+	}
 }
 
 template<typename Container>
-bool clear()
+void size()
 {
-	Container c;
+	{
+		Container c;
 
-	c.insert(begin(zero_to_seven), end(zero_to_seven));
+		REQUIRE(c.size() == 0);
+	}
 
+	{
+		Container c(begin(zero_to_seven), end(zero_to_seven));
+
+		REQUIRE(c.size() == 8);
+	}
+}
+
+TEST_CASE("API/size", "Size of constructed container is correct.")
+{
+	SECTION("list<int, count, count>", "list<int, count, count>")
+	{
+		size<so::list<int, so::find_policy::count>>();
+	}
+
+	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
+	{
+		size<so::list<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("list<int, transpose>", "list<int, transpose>")
+	{
+		size<so::list<int, so::find_policy::transpose>>();
+	}
+
+	SECTION("vector<int, count, count>", "vector<int, count, count>")
+	{
+		size<so::vector<int, so::find_policy::count>>();
+	}
+
+	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
+	{
+		size<so::vector<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("vector<int, transpose>", "vector<int, transpose>")
+	{
+		size<so::vector<int, so::find_policy::transpose>>();
+	}
+}
+
+template<typename Container>
+void clear()
+{
+	Container c(begin(zero_to_seven), end(zero_to_seven));
 	c.clear();
 
-	if(c.size() != 0)
+	REQUIRE(c.size() == 0);
+}
+
+TEST_CASE("API/clear", "Size of cleared container is 0.")
+{
+	SECTION("list<int, count, count>", "list<int, count, count>")
 	{
-		return false;
+		clear<so::list<int, so::find_policy::count>>();
 	}
 
-	if(c.begin() != c.end())
+	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
 	{
-		return false;
+		clear<so::list<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("list<int, transpose>", "list<int, transpose>")
+	{
+		clear<so::list<int, so::find_policy::transpose>>();
 	}
 
-	return true;
+	SECTION("vector<int, count, count>", "vector<int, count, count>")
+	{
+		clear<so::vector<int, so::find_policy::count>>();
+	}
+
+	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
+	{
+		clear<so::vector<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("vector<int, transpose>", "vector<int, transpose>")
+	{
+		clear<so::vector<int, so::find_policy::transpose>>();
+	}
 }
 
-bool clear_list()
+template<typename Container>
+void erase()
 {
-	return clear<so::list<int, so::find_policy::count>>();
+	Container c(begin(zero_to_seven), end(zero_to_seven));
+	Container::iterator i = c.erase(c.begin());
+
+	REQUIRE(c.size() == 7);
+	REQUIRE(c.front() == 1);
+	REQUIRE(i == c.begin());
+
+	i = c.erase(c.begin());
+
+	REQUIRE(c.size() == 6);
+	REQUIRE(c.front() == 2);
+	REQUIRE(i == c.begin());
 }
 
-bool clear_vector()
+TEST_CASE("API/erase", "Container shrinks as elements are erased.")
 {
-	return clear<so::vector<int, so::find_policy::count>>();
+	SECTION("list<int, count, count>", "list<int, count, count>")
+	{
+		clear<so::list<int, so::find_policy::count>>();
+	}
+
+	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
+	{
+		clear<so::list<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("list<int, transpose>", "list<int, transpose>")
+	{
+		clear<so::list<int, so::find_policy::transpose>>();
+	}
+
+	SECTION("vector<int, count, count>", "vector<int, count, count>")
+	{
+		clear<so::vector<int, so::find_policy::count>>();
+	}
+
+	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
+	{
+		clear<so::vector<int, so::find_policy::move_to_front>>();
+	}
+	
+	SECTION("vector<int, transpose>", "vector<int, transpose>")
+	{
+		clear<so::vector<int, so::find_policy::transpose>>();
+	}
 }
 
+/*
 template<typename Container>
 bool final_order(const array<int, 8> final_order)
 {
