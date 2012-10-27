@@ -15,44 +15,48 @@ namespace so = self_organizing;
 
 const array<int, 8> zero_to_seven = {0, 1, 2, 3, 4, 5, 6, 7};
 
+#define API_TEST_CASE(name, description, function)						\
+																		\
+TEST_CASE(name, description)											\
+{																		\
+	SECTION("list<int, count, count>", "list<int, count, count>")		\
+	{																	\
+		function<so::list<int, so::find_policy::count>>();				\
+	}																	\
+																		\
+	SECTION("list<int, move_to_front>", "list<int, move_to_front>")		\
+	{																	\
+		function<so::list<int, so::find_policy::move_to_front>>();		\
+	}																	\
+																		\
+	SECTION("list<int, transpose>", "list<int, transpose>")				\
+	{																	\
+		function<so::list<int, so::find_policy::transpose>>();			\
+	}																	\
+																		\
+	SECTION("vector<int, count, count>", "vector<int, count, count>")	\
+	{																	\
+		function<so::vector<int, so::find_policy::count>>();			\
+	}																	\
+																		\
+	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")	\
+	{																	\
+		function<so::vector<int, so::find_policy::move_to_front>>();	\
+	}																	\
+																		\
+	SECTION("vector<int, transpose>", "vector<int, transpose>")			\
+	{																	\
+		function<so::vector<int, so::find_policy::transpose>>();		\
+	}																	\
+}																		\
+
 template<typename Container>
 void default_constructor()
 {
 	Container c;
 }
 
-TEST_CASE("API/default_constructor", "Dummy test. Confirms compilation is successful.")
-{
-	SECTION("list<int, count, count>", "list<int, count, count>")
-	{
-		default_constructor<so::list<int, so::find_policy::count>>();
-	}
-
-	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
-	{
-		default_constructor<so::list<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("list<int, transpose>", "list<int, transpose>")
-	{
-		default_constructor<so::list<int, so::find_policy::transpose>>();
-	}
-
-	SECTION("vector<int, count, count>", "vector<int, count, count>")
-	{
-		default_constructor<so::vector<int, so::find_policy::count>>();
-	}
-
-	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
-	{
-		default_constructor<so::vector<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("vector<int, transpose>", "vector<int, transpose>")
-	{
-		default_constructor<so::vector<int, so::find_policy::transpose>>();
-	}
-}
+API_TEST_CASE("API/default_constructor", "Dummy test. Confirms compilation is successful.", default_constructor);
 
 template<typename Container>
 void range_constructor()
@@ -62,38 +66,7 @@ void range_constructor()
 	CHECK(equal(begin(c), end(c), begin(zero_to_seven)));
 }
 
-TEST_CASE("API/range_constructor", "Range-constructing container equals range.")
-{
-	SECTION("list<int, count, count>", "list<int, count, count>")
-	{
-		range_constructor<so::list<int, so::find_policy::count>>();
-	}
-
-	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
-	{
-		range_constructor<so::list<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("list<int, transpose>", "list<int, transpose>")
-	{
-		range_constructor<so::list<int, so::find_policy::transpose>>();
-	}
-
-	SECTION("vector<int, count, count>", "vector<int, count, count>")
-	{
-		range_constructor<so::vector<int, so::find_policy::count>>();
-	}
-
-	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
-	{
-		range_constructor<so::vector<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("vector<int, transpose>", "vector<int, transpose>")
-	{
-		range_constructor<so::vector<int, so::find_policy::transpose>>();
-	}
-}
+API_TEST_CASE("API/range_constructor", "Range-constructing container equals range.", range_constructor);
 
 template<typename Container>
 void copy_constructor()
@@ -103,38 +76,7 @@ void copy_constructor()
 	CHECK(equal(begin(c), end(c), begin(copy)));
 }
 
-TEST_CASE("API/copy_constructor", "Copy-constructing container equals copy.")
-{
-	SECTION("list<int, count, count>", "list<int, count, count>")
-	{
-		copy_constructor<so::list<int, so::find_policy::count>>();
-	}
-
-	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
-	{
-		copy_constructor<so::list<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("list<int, transpose>", "list<int, transpose>")
-	{
-		copy_constructor<so::list<int, so::find_policy::transpose>>();
-	}
-
-	SECTION("vector<int, count, count>", "vector<int, count, count>")
-	{
-		copy_constructor<so::vector<int, so::find_policy::count>>();
-	}
-
-	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
-	{
-		copy_constructor<so::vector<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("vector<int, transpose>", "vector<int, transpose>")
-	{
-		copy_constructor<so::vector<int, so::find_policy::transpose>>();
-	}
-}
+API_TEST_CASE("API/copy_constructor", "Copy-constructing container equals copy.", copy_constructor);
 
 template<typename Container>
 void front_back()
@@ -145,38 +87,7 @@ void front_back()
 	REQUIRE(c.back() == 7);
 }
 
-TEST_CASE("API/front_and_back", "Front and back values of constructed container.")
-{
-	SECTION("list<int, count, count>", "list<int, count, count>")
-	{
-		front_back<so::list<int, so::find_policy::count>>();
-	}
-
-	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
-	{
-		front_back<so::list<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("list<int, transpose>", "list<int, transpose>")
-	{
-		front_back<so::list<int, so::find_policy::transpose>>();
-	}
-
-	SECTION("vector<int, count, count>", "vector<int, count, count>")
-	{
-		front_back<so::vector<int, so::find_policy::count>>();
-	}
-
-	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
-	{
-		front_back<so::vector<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("vector<int, transpose>", "vector<int, transpose>")
-	{
-		front_back<so::vector<int, so::find_policy::transpose>>();
-	}
-}
+API_TEST_CASE("API/front_and_back", "Front and back values of constructed container.", front_back);
 
 template<typename Container>
 void empty()
@@ -186,38 +97,7 @@ void empty()
 	REQUIRE(c.empty() == true);
 }
 
-TEST_CASE("API/empty", "Empty is true for default container.")
-{
-	SECTION("list<int, count, count>", "list<int, count, count>")
-	{
-		empty<so::list<int, so::find_policy::count>>();
-	}
-
-	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
-	{
-		empty<so::list<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("list<int, transpose>", "list<int, transpose>")
-	{
-		empty<so::list<int, so::find_policy::transpose>>();
-	}
-
-	SECTION("vector<int, count, count>", "vector<int, count, count>")
-	{
-		empty<so::vector<int, so::find_policy::count>>();
-	}
-
-	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
-	{
-		empty<so::vector<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("vector<int, transpose>", "vector<int, transpose>")
-	{
-		empty<so::vector<int, so::find_policy::transpose>>();
-	}
-}
+API_TEST_CASE("API/empty", "Empty is true for default container.", empty);
 
 template<typename Container>
 void size()
@@ -235,38 +115,7 @@ void size()
 	}
 }
 
-TEST_CASE("API/size", "Size of constructed container is correct.")
-{
-	SECTION("list<int, count, count>", "list<int, count, count>")
-	{
-		size<so::list<int, so::find_policy::count>>();
-	}
-
-	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
-	{
-		size<so::list<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("list<int, transpose>", "list<int, transpose>")
-	{
-		size<so::list<int, so::find_policy::transpose>>();
-	}
-
-	SECTION("vector<int, count, count>", "vector<int, count, count>")
-	{
-		size<so::vector<int, so::find_policy::count>>();
-	}
-
-	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
-	{
-		size<so::vector<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("vector<int, transpose>", "vector<int, transpose>")
-	{
-		size<so::vector<int, so::find_policy::transpose>>();
-	}
-}
+API_TEST_CASE("API/size", "Size of constructed container is correct.", size);
 
 template<typename Container>
 void clear()
@@ -277,38 +126,7 @@ void clear()
 	REQUIRE(c.size() == 0);
 }
 
-TEST_CASE("API/clear", "Size of cleared container is 0.")
-{
-	SECTION("list<int, count, count>", "list<int, count, count>")
-	{
-		clear<so::list<int, so::find_policy::count>>();
-	}
-
-	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
-	{
-		clear<so::list<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("list<int, transpose>", "list<int, transpose>")
-	{
-		clear<so::list<int, so::find_policy::transpose>>();
-	}
-
-	SECTION("vector<int, count, count>", "vector<int, count, count>")
-	{
-		clear<so::vector<int, so::find_policy::count>>();
-	}
-
-	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
-	{
-		clear<so::vector<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("vector<int, transpose>", "vector<int, transpose>")
-	{
-		clear<so::vector<int, so::find_policy::transpose>>();
-	}
-}
+API_TEST_CASE("API/clear", "Size of cleared container is 0.", clear);
 
 template<typename Container>
 void erase()
@@ -327,38 +145,7 @@ void erase()
 	REQUIRE(i == c.end());
 }
 
-TEST_CASE("API/erase", "Container shrinks as elements are erased.")
-{
-	SECTION("list<int, count, count>", "list<int, count, count>")
-	{
-		erase<so::list<int, so::find_policy::count>>();
-	}
-
-	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
-	{
-		erase<so::list<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("list<int, transpose>", "list<int, transpose>")
-	{
-		erase<so::list<int, so::find_policy::transpose>>();
-	}
-
-	SECTION("vector<int, count, count>", "vector<int, count, count>")
-	{
-		erase<so::vector<int, so::find_policy::count>>();
-	}
-
-	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
-	{
-		erase<so::vector<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("vector<int, transpose>", "vector<int, transpose>")
-	{
-		erase<so::vector<int, so::find_policy::transpose>>();
-	}
-}
+API_TEST_CASE("API/erase", "Container shrinks as elements are erased.", erase);
 
 template<typename Container>
 void push_back()
@@ -372,38 +159,7 @@ void push_back()
 	REQUIRE(equal(c.begin(), c.end(), zero_to_seven.begin()));
 }
 
-TEST_CASE("API/push_back", "Size of cleared container is 0.")
-{
-	SECTION("list<int, count, count>", "list<int, count, count>")
-	{
-		push_back<so::list<int, so::find_policy::count>>();
-	}
-
-	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
-	{
-		push_back<so::list<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("list<int, transpose>", "list<int, transpose>")
-	{
-		push_back<so::list<int, so::find_policy::transpose>>();
-	}
-
-	SECTION("vector<int, count, count>", "vector<int, count, count>")
-	{
-		push_back<so::vector<int, so::find_policy::count>>();
-	}
-
-	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
-	{
-		push_back<so::vector<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("vector<int, transpose>", "vector<int, transpose>")
-	{
-		push_back<so::vector<int, so::find_policy::transpose>>();
-	}
-}
+API_TEST_CASE("API/push_back", "Size of cleared container is 0.", push_back);
 
 template<typename Container>
 void find()
@@ -421,38 +177,7 @@ void find()
 	REQUIRE(i == c.end());
 }
 
-TEST_CASE("API/find", "Elements from container can be found. Elements not from caontainer cannot be found.")
-{
-	SECTION("list<int, count, count>", "list<int, count, count>")
-	{
-		find<so::list<int, so::find_policy::count>>();
-	}
-
-	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
-	{
-		find<so::list<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("list<int, transpose>", "list<int, transpose>")
-	{
-		find<so::list<int, so::find_policy::transpose>>();
-	}
-
-	SECTION("vector<int, count, count>", "vector<int, count, count>")
-	{
-		find<so::vector<int, so::find_policy::count>>();
-	}
-
-	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
-	{
-		find<so::vector<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("vector<int, transpose>", "vector<int, transpose>")
-	{
-		find<so::vector<int, so::find_policy::transpose>>();
-	}
-}
+API_TEST_CASE("API/find", "Elements from container can be found. Elements not from caontainer cannot be found.", find);
 
 template<typename Container>
 void find_if()
@@ -470,38 +195,8 @@ void find_if()
 	REQUIRE(i == c.end());
 }
 
-TEST_CASE("API/find_if", "Elements from container can be found. Elements not from caontainer cannot be found.")
-{
-	SECTION("list<int, count, count>", "list<int, count, count>")
-	{
-		find_if<so::list<int, so::find_policy::count>>();
-	}
 
-	SECTION("list<int, move_to_front>", "list<int, move_to_front>")
-	{
-		find_if<so::list<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("list<int, transpose>", "list<int, transpose>")
-	{
-		find_if<so::list<int, so::find_policy::transpose>>();
-	}
-
-	SECTION("vector<int, count, count>", "vector<int, count, count>")
-	{
-		find_if<so::vector<int, so::find_policy::count>>();
-	}
-
-	SECTION("vector<int, move_to_front>", "vector<int, move_to_front>")
-	{
-		find_if<so::vector<int, so::find_policy::move_to_front>>();
-	}
-	
-	SECTION("vector<int, transpose>", "vector<int, transpose>")
-	{
-		find_if<so::vector<int, so::find_policy::transpose>>();
-	}
-}
+API_TEST_CASE("API/find_if", "The find_if test", find_if);
 
 /*
 template<typename Container>
