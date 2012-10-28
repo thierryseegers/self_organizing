@@ -4,6 +4,10 @@ if(MSVC)
 	add_definitions(-D_SCL_SECURE_NO_WARNINGS)
 endif()
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+	set(CMAKE_CXX_FLAGS -std=c++0x)
+endif()
+
 add_executable(correctness catch.hpp correctness.cpp)
 set_property(TARGET correctness PROPERTY FOLDER "tests")
 

@@ -41,7 +41,7 @@ namespace find_policy
 
 				if(h != i)
 				{
-					Impl::iterator::value_type t(std::move(*i));
+					typename Impl::iterator::value_type t(std::move(*i));
 					impl.erase(i);
 					impl.emplace(h, std::move(t));
 					i = h;
@@ -61,7 +61,7 @@ namespace find_policy
 			
 			if(i != impl.end())
 			{
-				Impl::iterator::value_type t(std::move(*i));
+				typename Impl::iterator::value_type t(std::move(*i));
 				impl.erase(i);
 				impl.emplace(impl.begin(), std::move(t));
 				i = impl.begin();
@@ -90,6 +90,7 @@ namespace find_policy
 	};
 }
 
+//!\cond
 namespace detail
 {
 
@@ -97,7 +98,7 @@ template<template<typename, typename> class Container, typename T, typename Find
 class container
 {
 protected:
-	typedef typename Container<T, std::allocator<T>> impl_type;
+	typedef Container<T, std::allocator<T>> impl_type;
 
 	impl_type c_;
 
@@ -230,23 +231,23 @@ public:
 template<template<typename, typename> class Container, typename T>
 class container<Container, T, find_policy::count>
 {
-	typedef typename Container<std::pair<size_t, T>, std::allocator<std::pair<size_t, T>>> impl_type;
+	typedef Container<std::pair<size_t, T>, std::allocator<std::pair<size_t, T>>> impl_type;
 
 	impl_type c_;
 
 public:
 	typedef T value_type;
 	typedef typename impl_type::size_type size_type;
-	typedef typename T& reference;
-	typedef typename T const& const_reference;
-	typedef typename T* pointer;
-	typedef typename T const* const_pointer;
+	typedef T& reference;
+	typedef T const& const_reference;
+	typedef T* pointer;
+	typedef T const* const_pointer;
 
 	template<typename U>
 	class const_iterator_
 	{
 		typedef typename container<Container, U, find_policy::count>::impl_type::const_iterator impl_type;
-		typename impl_type i;
+		impl_type i;
 
 	public:
 		typedef const_iterator_<U> self_type;
@@ -259,13 +260,13 @@ public:
 
 		const_iterator_() {}
 
-		const_iterator_(typename const self_type& o) : i(o.i) {}
+		const_iterator_(const self_type& o) : i(o.i) {}
 
-		const_iterator_(typename impl_type i) : i(i) {}
+		const_iterator_(impl_type i) : i(i) {}
 
 		const_iterator_(typename container<Container, U, find_policy::count>::impl_type::iterator i) : i(i) {}
 
-		operator typename impl_type()
+		operator impl_type()
 		{
 			return i;
 		}
@@ -312,10 +313,10 @@ public:
 	class iterator_
 	{
 		typedef typename container<Container, U, find_policy::count>::impl_type::iterator impl_type;
-		typename impl_type i;
+		impl_type i;
 
 	public:
-		typedef typename iterator_<U> self_type;
+		typedef iterator_<U> self_type;
 		typedef std::bidirectional_iterator_tag iterator_category;
 
 		typedef U value_type;
@@ -329,7 +330,7 @@ public:
 
 		iterator_(const impl_type& i) : i(i) {}
 		
-		operator typename impl_type()
+		operator impl_type()
 		{
 			return i;
 		}
@@ -377,8 +378,8 @@ public:
 		}
 	};
 
-	typedef typename const_iterator_<T> const_iterator;
-	typedef typename iterator_<T> iterator;
+	typedef const_iterator_<T> const_iterator;
+	typedef iterator_<T> iterator;
 
 	container()
 	{}
@@ -500,6 +501,7 @@ public:
 };
 
 }
+//!\endcond
 
 template<typename T, typename FindPolicy>
 class list : public detail::container<std::list, T, FindPolicy>
@@ -514,7 +516,7 @@ public:
 
 	typename detail::container<std::list, T, FindPolicy>::iterator push_front(const T& value)
 	{
-		c_.push_front(value);
+		detail::container<std::list, T, FindPolicy>::c_.push_front(value);
 	}
 };
 
@@ -541,9 +543,9 @@ public:
 	vector(InputIt first, InputIt last) : detail::container<std::vector, T, FindPolicy>(first, last)
 	{}
 
-	typename detail::container<std::list, T, FindPolicy>::iterator push_front(const T& value)
+	typename detail::container<std::vector, T, FindPolicy>::iterator push_front(const T& value)
 	{
-		c_.insert(c_.begin(), value);
+		detail::container<std::vector, T, FindPolicy>::c_.insert(detail::container<std::vector, T, FindPolicy>::c_.begin(), value);
 	}
 };
 

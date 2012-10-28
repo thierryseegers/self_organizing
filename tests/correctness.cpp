@@ -117,7 +117,7 @@ API_TEST_CASE("API/clear", "Size of cleared container is 0.", clear)
 API_TEST_CASE("API/erase", "Container shrinks as elements are erased.", erase)
 {
 	Container c(begin(zero_to_seven), end(zero_to_seven));
-	Container::iterator i = c.erase(c.begin());
+	typename Container::iterator i = c.erase(c.begin());
 
 	REQUIRE(c.size() == 7);
 	REQUIRE(c.front() == 1);
@@ -144,7 +144,7 @@ API_TEST_CASE("API/push_back", "Size of cleared container is 0.", push_back)
 API_TEST_CASE("API/find", "Elements from container can be found. Elements not from caontainer cannot be found.", find)
 {
 	Container c(begin(zero_to_seven), end(zero_to_seven));
-	Container::iterator i;
+	typename Container::iterator i;
 
 	for(const auto& a : zero_to_seven)
 	{
@@ -159,73 +159,157 @@ API_TEST_CASE("API/find", "Elements from container can be found. Elements not fr
 API_TEST_CASE("API/find_if", "Elements from container can be found with a predicate. Elements not from caontainer cannot be found.", find_if)
 {
 	Container c(begin(zero_to_seven), end(zero_to_seven));
-	Container::iterator i;
+	typename Container::iterator i;
 
 	for(const auto& a : zero_to_seven)
 	{
-		i = c.find_if([a](const Container::value_type& v){ return v == a; });
+		i = c.find_if([a](const typename Container::value_type& v){ return v == a; });
 		REQUIRE(i != c.end());
 	}
 
-	i = c.find_if([](const Container::value_type& v){ return v == 8; });
+	i = c.find_if([](const typename Container::value_type& v){ return v == 8; });
 	REQUIRE(i == c.end());
 }
 
+#if defined(__GNUG__)
 
-template<typename Container>
-bool policy_check(const vector<int> starting_order, const vector<int> find_order, const vector<int> final_order)
+typedef void (*get_orders_t)(vector<int>&, vector<int>&, vector<int>&);
+
+template<typename Policy>
+bool policy_check(vector<int> starting_order, vector<int> find_order, vector<int> final_order)
 {
-	Container c(begin(starting_order), end(starting_order));
-
-	for(const auto& i : find_order)
 	{
-		c.find(i);
+		so::vector<int, Policy> v(begin(starting_order), end(starting_order));
+
+		for(const auto& i : find_order)
+		{
+			v.find(i);
+		}
+
+		CHECK(equal(begin(v), end(v), begin(final_order)));
 	}
 
-	CHECK(equal(begin(c), end(c), begin(final_order)));
+	{
+		so::list<int, Policy> l(begin(starting_order), end(starting_order));
+
+		for(const auto& i : find_order)
+		{
+			l.find(i);
+		}
+
+		CHECK(equal(begin(l), end(l), begin(final_order)));
+	}
 }
 
-TEST_CASE("policy/count", "")
+TEST_CASE("policy/empty", "An empty container remains empty after searching anything.")
 {
-	const int starting_order[] = {0, 1, 2, 3, 4, 5, 6, 7}, 
-			  find_order[] = {5, 3, 5, 6, 4, 6, 5, 0, 3, 5, 6, 4}, 
-			  final_order[] = {5, 6, 3, 4, 0, 1, 2, 7};
+	policy_check<so::find_policy::count>({}, {1, 2, 3}, {});
 
-	policy_check<so::list<int, so::find_policy::count>>(vector<int>(begin(starting_order), end(starting_order)), 
-														vector<int>(begin(find_order), end(find_order)),
-														vector<int>(begin(final_order), end(final_order)));
+	policy_check<so::find_policy::transpose>({}, {1, 2, 3}, {});
 
-	policy_check<so::vector<int, so::find_policy::count>>(vector<int>(begin(starting_order), end(starting_order)), 
-														  vector<int>(begin(find_order), end(find_order)),
-														  vector<int>(begin(final_order), end(final_order)));
+	policy_check<so::find_policy::move_to_front>({}, {1, 2, 3}, {});
 }
 
-TEST_CASE("policy/move_to_front", "")
+TEST_CASE("policy/no_hits", "A container remains the same after searching for non-existing values.")
 {
-	const int starting_order[] = {0, 1, 2, 3, 4, 5, 6, 7}, 
-			  find_order[] = {5, 3, 5, 6, 4, 6, 5, 0, 3, 5, 6, 4}, 
-			  final_order[] = {4, 6, 5, 3, 0, 1, 2, 7};
+	policy_check<so::find_policy::count>({1, 2, 3}, {0, 0, 0}, {1, 2, 3});
 
-	policy_check<so::list<int, so::find_policy::move_to_front>>(vector<int>(begin(starting_order), end(starting_order)), 
-																vector<int>(begin(find_order), end(find_order)),
-																vector<int>(begin(final_order), end(final_order)));
+	policy_check<so::find_policy::transpose>({1, 2, 3}, {0, 0, 0}, {1, 2, 3});
 
-	policy_check<so::vector<int, so::find_policy::move_to_front>>(vector<int>(begin(starting_order), end(starting_order)), 
-																  vector<int>(begin(find_order), end(find_order)),
-																  vector<int>(begin(final_order), end(final_order)));
+	policy_check<so::find_policy::move_to_front>({1, 2, 3}, {0, 0, 0}, {1, 2, 3});
 }
 
-TEST_CASE("policy/transpose", "")
+TEST_CASE("policy/count_one", "An elements searched for once ends up at the front of the container.")
 {
-	const int starting_order[] = {0, 1, 2, 3, 4, 5, 6, 7}, 
-			  find_order[] = {5, 3, 5, 6, 4, 6, 5, 0, 3, 5, 6, 4}, 
-			  final_order[] = {0, 1, 5, 3, 6, 4, 2, 7};
+	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {0}, {0, 1, 2, 3, 4, 5, 6, 7});
 
-	policy_check<so::list<int, so::find_policy::transpose>>(vector<int>(begin(starting_order), end(starting_order)), 
-															vector<int>(begin(find_order), end(find_order)),
-															vector<int>(begin(final_order), end(final_order)));
+	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {1}, {1, 0, 2, 3, 4, 5, 6, 7});
 
-	policy_check<so::vector<int, so::find_policy::transpose>>(vector<int>(begin(starting_order), end(starting_order)), 
-																vector<int>(begin(find_order), end(find_order)),
-																vector<int>(begin(final_order), end(final_order)));
+	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {2}, {2, 0, 1, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {6}, {6, 0, 1, 2, 3, 4, 5, 7});
+
+	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {7}, {7, 0, 1, 2, 3, 4, 5, 6});
 }
+
+TEST_CASE("policy/count_three", "An elements searched for three times ends up at the front of the container.")
+{
+	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {0, 0, 0}, {0, 1, 2, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {1, 1, 1}, {1, 0, 2, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {2, 2, 2}, {2, 0, 1, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {6, 6, 6}, {6, 0, 1, 2, 3, 4, 5, 7});
+
+	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {7, 7, 7}, {7, 0, 1, 2, 3, 4, 5, 6});
+}
+
+TEST_CASE("policy/count_random", "Elements searched once or multiple times produced the determined final order.")
+{
+	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {5, 3, 5, 6, 4, 6, 5, 0, 3, 5, 6, 4}, {5, 6, 3, 4, 0, 1, 2, 7});			
+}
+
+TEST_CASE("policy/move_to_front_one", "An elements searched for once ends up at the front of the container.")
+{
+	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {0}, {0, 1, 2, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {1}, {1, 0, 2, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {2}, {2, 0, 1, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {6}, {6, 0, 1, 2, 3, 4, 5, 7});
+
+	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {7}, {7, 0, 1, 2, 3, 4, 5, 6});
+}
+
+TEST_CASE("policy/move_to_front_three", "An elements searched for three times ends up at the front of the container.")
+{
+	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {0, 0, 0}, {0, 1, 2, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {1, 1, 1}, {1, 0, 2, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {2, 2, 2}, {2, 0, 1, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {6, 6, 6}, {6, 0, 1, 2, 3, 4, 5, 7});
+
+	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {7, 7, 7}, {7, 0, 1, 2, 3, 4, 5, 6});
+}
+
+TEST_CASE("policy/move_to_front_random", "Elements searched once or multiple times produced the determined final order.")
+{
+	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {5, 3, 5, 6, 4, 6, 5, 0, 3, 5, 6, 4}, {4, 6, 5, 3, 0, 1, 2, 7});			
+}
+
+TEST_CASE("policy/transpose_one", "An elements searched for once is swapped with the element preceding it.")
+{
+	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {0}, {0, 1, 2, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {1}, {1, 0, 2, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {2}, {0, 2, 1, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {6}, {0, 1, 2, 3, 4, 6, 5, 7});
+
+	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {7}, {0, 1, 2, 3, 4, 5, 7, 6});
+}
+
+TEST_CASE("policy/transpose_three", "An elements searched for three times moves forward three positions.")
+{
+	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {0, 0, 0}, {0, 1, 2, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {1, 1, 1}, {1, 0, 2, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {2, 2, 2}, {2, 0, 1, 3, 4, 5, 6, 7});
+
+	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {6, 6, 6}, {0, 1, 2, 6, 3, 4, 5, 7});
+
+	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {7, 7, 7}, {0, 1, 2, 3, 7, 4, 5, 6});
+}
+
+TEST_CASE("policy/transpose_random", "Elements searched once or multiple times produced the determined final order.")
+{
+	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {5, 3, 5, 6, 4, 6, 5, 0, 3, 5, 6, 4}, {0, 1, 5, 3, 6, 4, 2, 7});			
+}
+
+#endif
