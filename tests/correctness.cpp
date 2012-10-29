@@ -171,7 +171,7 @@ API_TEST_CASE("API/find_if", "Elements from container can be found with a predic
 	REQUIRE(i == c.end());
 }
 
-#if defined(__GNUG__)
+#if defined(__GNUC__) || defined(__clang__)
 
 typedef void (*get_orders_t)(vector<int>&, vector<int>&, vector<int>&);
 
@@ -232,7 +232,7 @@ TEST_CASE("policy/count_one", "An elements searched for once ends up at the fron
 	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {7}, {7, 0, 1, 2, 3, 4, 5, 6});
 }
 
-TEST_CASE("policy/count_three", "An elements searched for three times ends up at the front of the container.")
+TEST_CASE("policy/count_three", "An element searched for three times ends up at the front of the container.")
 {
 	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {0, 0, 0}, {0, 1, 2, 3, 4, 5, 6, 7});
 
@@ -243,6 +243,16 @@ TEST_CASE("policy/count_three", "An elements searched for three times ends up at
 	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {6, 6, 6}, {6, 0, 1, 2, 3, 4, 5, 7});
 
 	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {7, 7, 7}, {7, 0, 1, 2, 3, 4, 5, 6});
+}
+
+TEST_CASE("policy/count_order", "Elements searched in order remain at their original position.")
+{
+	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {0, 1, 2, 3, 4, 5, 6, 7}, {0, 1, 2, 3, 4, 5, 6, 7});			
+}
+
+TEST_CASE("policy/reverse_order", "Elements searched in reverse order remain at their new position.")
+{
+	policy_check<so::find_policy::count>({0, 1, 2, 3, 4, 5, 6, 7}, {7, 6, 5, 4, 3, 2, 1, 0}, {7, 6, 5, 4, 3, 2, 1, 0});			
 }
 
 TEST_CASE("policy/count_random", "Elements searched once or multiple times produced the determined final order.")
@@ -276,6 +286,16 @@ TEST_CASE("policy/move_to_front_three", "An elements searched for three times en
 	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {7, 7, 7}, {7, 0, 1, 2, 3, 4, 5, 6});
 }
 
+TEST_CASE("policy/move_to_front_order", "Elements searched in order remain at their new position.")
+{
+	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {0, 1, 2, 3, 4, 5, 6, 7}, {7, 6, 5, 4, 3, 2, 1, 0});			
+}
+
+TEST_CASE("policy/move_to_front_reverse_order", "Elements searched in reverse order remain at their original position.")
+{
+	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {7, 6, 5, 4, 3, 2, 1, 0}, {0, 1, 2, 3, 4, 5, 6, 7});			
+}
+
 TEST_CASE("policy/move_to_front_random", "Elements searched once or multiple times produced the determined final order.")
 {
 	policy_check<so::find_policy::move_to_front>({0, 1, 2, 3, 4, 5, 6, 7}, {5, 3, 5, 6, 4, 6, 5, 0, 3, 5, 6, 4}, {4, 6, 5, 3, 0, 1, 2, 7});			
@@ -307,6 +327,15 @@ TEST_CASE("policy/transpose_three", "An elements searched for three times moves 
 	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {7, 7, 7}, {0, 1, 2, 3, 7, 4, 5, 6});
 }
 
+TEST_CASE("policy/transpose_order", "Elements searched in order rotate the container forward.")
+{
+	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {0, 1, 2, 3, 4, 5, 6, 7}, {1, 2, 3, 4, 5, 6, 7, 0});
+}
+
+TEST_CASE("policy/transpose_reverse_order", "Elements searched in reverse order remain at their original position.")
+{
+	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {7, 6, 5, 4, 3, 2, 1, 0}, {0, 1, 2, 3, 4, 5, 6, 7});			
+}
 TEST_CASE("policy/transpose_random", "Elements searched once or multiple times produced the determined final order.")
 {
 	policy_check<so::find_policy::transpose>({0, 1, 2, 3, 4, 5, 6, 7}, {5, 3, 5, 6, 4, 6, 5, 0, 3, 5, 6, 4}, {0, 1, 5, 3, 6, 4, 2, 7});			
