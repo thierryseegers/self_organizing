@@ -173,8 +173,6 @@ API_TEST_CASE("API/find_if", "Elements from container can be found with a predic
 
 #if defined(__GNUC__) || defined(__clang__)
 
-typedef void (*get_orders_t)(vector<int>&, vector<int>&, vector<int>&);
-
 template<typename Policy>
 bool policy_check(vector<int> starting_order, vector<int> find_order, vector<int> final_order)
 {
