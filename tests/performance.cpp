@@ -99,7 +99,7 @@ void test(size_t size, const double sigma)
 	cout << "find_policy::move_to_front: " << chrono::duration_cast<chrono::milliseconds>(hrc.now() - start).count() << "ms" << endl;
 	cout << "find_policy::transpose: " << transpose_time.get() << "ms" << endl;
 	cout << "find_policy::count: " << count_time.get() << "ms" << endl;
-	cout << "std::count: " << control_time.get() << "ms" << endl;
+	cout << "std::control: " << control_time.get() << "ms" << endl;
 }
 
 int main()
