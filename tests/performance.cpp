@@ -27,7 +27,7 @@ void test(size_t size, const double sigma)
 			v[i] = i;
 		}
 
-		srand(unsigned int(time(0)));
+		srand((unsigned int)time(0));
 		random_shuffle(begin(v), end(v));
 
 		initialized = true;
