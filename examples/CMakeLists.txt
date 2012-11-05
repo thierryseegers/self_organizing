@@ -4,4 +4,4 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_CXX_FLAGS -std=c++0x)
 endif()
 
-add_executable(examples main.cpp)
+add_executable(examples example.cpp)
