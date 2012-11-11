@@ -43,7 +43,7 @@ void test(size_t size, const double sigma)
 
 	// Generate 100000 numbers to search for given the passed distribution.
 	random_device rd;
-    mt19937 gen(rd());
+	mt19937 gen(rd());
 	normal_distribution<> dis(size / 2, sigma);
 
 	vector<int> searches;

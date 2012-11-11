@@ -670,17 +670,70 @@ public:
 
 \section introduction Introduction
 
-\subsection why Why this project
+\subsection why Why this project?
 
-\subsection whatis What ia self-organizing list?
+I started this project the same way I started a few others already.
+I cracked open my "Data Structures and Algorithm Analysis" book from college and browsed its table of contents for an interesting concept to implement in C++11.
+This project is about exploring what the new C++ standard offers and putting it in practice in smallish, self-contained libraries.
+I'm also using this project to try out GitHub's offering.
+This project is \e not the most perfomant and efficient self-orginizing list you've ever seen.
+In fact, after running some crude performance benchmark, I've concluded its advantage window is quite narrow.
+More on that down below.
+
+\subsection whatis What is a self-organizing list?
+
+A self-organizing list is a container that attempts to optimize future searches based on past searches.
+Because a search in a list is a linear operation, the closer to the head an element is, the faster it is to find it.
+Popular elements should therefore move closer to the head of the list over time to optimize future searches.
+Less popular elements will drift to the tail of the list.
+You might recognize in this description an implementation of the "80/20" rule for lists.
+
+Different self-organizing strategies exist, the following three are offered in this library.
+\li \b Count. Elements are kept ordered by the frequency of past searches.
+ An element that has been searched for \c N times is moved ahead of all elements that have been searched for less than \c N times.
+\li \b Transpose. When an element is searched for, it is swapped with the element in front of it.
+\li \b Move-to-front. When an element is searched for, it is moved to the front of the list.
 
 \section considerations Technical considerations
 
+Because of the motivation for this project to learn C++11 and put it in practice, you will obviously need a C++11 compliant compiler.
+I'm using Visual Studio 2012 to develop and I additionally test with g++ 4.6.
+I'm not using advanced or arcane C++11 features, so earlier version of these toolchains might also work.
+
 \section principles Design principles and considerations
 
-\subsection multithreaded Multi-threaded access
+\subsection policies Policy-based design
+
+This library consists of a generic container class for which one can specify policies as template parameters.
+
+This first policy parameter is the type of the underlying container to use.
+\c std::vector and std::list are supported.
+Note that you are \e not expected to specify that parameter directly.
+The generic self-organizing container class in the \ref self_organizing::detail "detail" namespace should not be instantiated directly.
+The actual types to be instantiated are \ref self_organizing::list and \ref self_organizing::vector.
+Why offer \c std::vector as a possible data holder?
+Because I can.
+But also because it helps to compare performance of such an animal with a that of a self-organizing list implemented with an actual list.
+
+The second policy parameter is the self_organizing strategy.
+All three strategies are defined in \ref self_organizing::find_policy.
+
+\subsection search Searching for an element
+
+Searching for an element in a \c std::vector or a \c std::list is performed with the generic \c std::find from the <tt>&lt;algorithm&gt;</tt> header.
+On the ther hand, \ref self_organizing::list and \ref self_organizing::vector provide \ref self_organizing::detail::container::find "find" member function.
+It is important to note that, by definition, a container's elements are re-ordered when a \c find operation is performed.
+Therefore, the \c find member is not \c const.
 
 \subsection iterators Iterator invalidation
+
+Iterator invalidation rules for a self-organizing container follow the same rules as for containers from the \c std namespace with one exception.
+\ref self_organizing::vector::iterator is invalidated after performing a search.
+This follows from the facts that a self-organizing container is re-ordered after a search is performed and that when elements from a \c std::vector are re-ordered, it's iterators are invalidated.
+This exception does not apply to \ref self_organizing::list::iterator.
+
+\subsection performance Performance
+
 
 \section sample Sample code
 
