@@ -7,6 +7,11 @@ set(VERSION_MINOR 0)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+if(CMAKE_GENERATOR STREQUAL Xcode)
+	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
+	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+endif()
+
 enable_testing()
 
 add_subdirectory(documentation)

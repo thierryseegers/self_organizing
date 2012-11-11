@@ -535,22 +535,22 @@ public:
 
 	iterator erase(iterator i)
 	{
-		return c_.erase(i);
+		return c_.erase((typename impl_type::iterator)i);
 	}
 
 	iterator erase(const_iterator i)
 	{
-		return c_.erase(i);
+		return c_.erase((typename impl_type::const_iterator)i);
 	}
 	 
 	iterator erase(iterator first, iterator last)
 	{
-		return c_.erase(first, last);
+		return c_.erase((typename impl_type::iterator)first, (typename impl_type::iterator)last);
 	}
 
 	iterator erase(const_iterator first, const_iterator last)
 	{
-		return c_.erase(first, last);
+		return c_.erase((typename impl_type::const_iterator)first, (typename impl_type::const_iterator)last);
 	}
 
 	void push_back(const value_type& value)
@@ -704,19 +704,16 @@ I'm not using advanced or arcane C++11 features, so earlier version of these too
 
 \subsection policies Policy-based design
 
-This library consists of a generic container class for which one can specify policies as template parameters.
+The public API of this library consists of two container classes and three policy classes to be used as template parameters for the container classes.
 
-This first policy parameter is the type of the underlying container to use.
-\c std::vector and std::list are supported.
-Note that you are \e not expected to specify that parameter directly.
-The generic self-organizing container class in the \ref self_organizing::detail "detail" namespace should not be instantiated directly.
-The actual types to be instantiated are \ref self_organizing::list and \ref self_organizing::vector.
-Why offer \c std::vector as a possible data holder?
+The two container classes are \ref self_organizing::list and \ref self_organizing::vector.
+They distinguish themselves by which container from the \c std namespace they use to hold data.
+Why offer \c std::vector as a possible data holder for something called "self-organizing list"?
 Because I can.
 But also because it helps to compare performance of such an animal with a that of a self-organizing list implemented with an actual list.
 
-The second policy parameter is the self_organizing strategy.
-All three strategies are defined in \ref self_organizing::find_policy.
+The policy classes each implement a self-organizing strategy.
+All three classes are defined in \ref self_organizing::find_policy.
 
 \subsection search Searching for an element
 
