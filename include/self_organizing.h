@@ -697,7 +697,7 @@ Different self-organizing strategies exist, the following three are offered in t
 \section considerations Technical considerations
 
 Because of the motivation for this project to learn C++11 and put it in practice, you will obviously need a C++11 compliant compiler.
-I'm using Visual Studio 2012 to develop and I additionally test with g++ 4.6.
+I'm using Visual Studio 2012 to develop but I additionally test with g++ 4.6 and XCode 4.5.
 I'm not using advanced or arcane C++11 features, so earlier version of these toolchains might also work.
 
 \section principles Design principles and considerations
