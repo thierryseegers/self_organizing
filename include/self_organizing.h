@@ -731,6 +731,20 @@ This exception does not apply to \ref self_organizing::list::iterator.
 
 \subsection performance Performance
 
+So, are they worth it?
+
+We already know that when searching for elements in a container in a purely random fashion, a self-organizing list will offer no performance improvement, only overhead.
+There would indeed be no useful information from past searches to use and optimize future searches.
+Self-organizing lists must only be used when searches are not random.
+
+I tested the performance of the following scenario.
+I randomly shuffled integers from 0 to 999999.
+I copied the numbers to five containers.
+One <tt>std::list</tt>, one <tt>std::vector</tt> and three self_organizing::list, each with a different \ref self_organizing::find_policy "find_policy".
+I then generated 100000 random integers multiple times from the same range using a <a href=http://en.wikipedia.org/wiki/Normal_distribution>normal distribution</a>.
+Each time, the mean was kept at 50000 and the variance was changed. Here are the results.
+
+\image html performance.png
 
 \section sample Sample code
 
