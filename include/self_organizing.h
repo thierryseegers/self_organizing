@@ -738,13 +738,39 @@ There would indeed be no useful information from past searches to use and optimi
 Self-organizing lists must only be used when searches are not random.
 
 I tested the performance of the following scenario.
-I randomly shuffled integers from 0 to 999999.
-I copied the numbers to five containers.
-One <tt>std::list</tt>, one <tt>std::vector</tt> and three self_organizing::list, each with a different \ref self_organizing::find_policy "find_policy".
-I then generated 100000 random integers multiple times from the same range using a <a href=http://en.wikipedia.org/wiki/Normal_distribution>normal distribution</a>.
+I randomly shuffled integers from 0 to 999999 and copied them to nine containers:
+ - One \c std::list, one \c std::vector and one \c std::set.
+ - Three self_organizing::list, each with a different \ref self_organizing::find_policy "find_policy".
+ - Three self_organizing::vector, each with a different \ref self_organizing::find_policy "find_policy".
+
+ I then generated 100000 random integers multiple times from the same range using a <a href=http://en.wikipedia.org/wiki/Normal_distribution>normal distribution</a>.
 Each time, the mean was kept at 50000 and the variance was changed. Here are the results.
 
 \image html performance.png
+
+First obvious conclusion: \c std::set crushes the competition.
+It barely registers.
+But, then again, this scenario is essentially perfect for it.
+All data is known ahead of time and I'm only measuring the time taken to search, not the time taken to set up to container.
+\c std::set reorganized the data in order during construction and and its \a log(N) search performance did the rest.
+
+At the other side of the spectrum, \c self_organizing::vector<find_policy::count> and \c self_organizing::vector<find_policy::move_to_front> can't keep up at all.
+The maintenance required is utterly misadapted to a \c vector since both policies constanly rearrange elements using insertion, an operation that \c vector is not made for.
+
+What's left in between?
+In third place we have \c std::vector.
+The nature of this test favors packed and static data, so that's no surprise.
+But ahead of it by a nose is \c self_organizing::vector<find_policy::transpose>.
+The transposition strategy of swapping element incurs little overhead to a \c vector and afforded it the second place.
+
+Where are our lists?
+\c std::list and \c self_organizing::list<find_policy::transpose> performed in lock-step, mimicking their \c vector cousins.
+Only, three times slower.
+I'm surprised the transposition strategy didn't help that much.
+Remains, \c self_organizing::list<find_policy::count> and \c self_organizing::list<find_policy::move_to_front>.
+Now those are interesting because they show a pattern of improving performance as the search variance is reduced.
+\c self_organizing::list<find_policy::move_to_front> even managed to come ahead of the \c vectors in the last test!
+
 
 \section sample Sample code
 

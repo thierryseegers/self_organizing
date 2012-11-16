@@ -9,12 +9,12 @@
 #include <future>
 #include <iostream>
 #include <random>
+#include <set>
 
 using namespace std;
 
 namespace so = self_organizing;
 
-template<template<typename, typename> class C, template<typename, typename> class S>
 void test(size_t size, const double sigma)
 {
 	static vector<int> v(size);
@@ -33,13 +33,18 @@ void test(size_t size, const double sigma)
 		initialized = true;
 	}
 
-	// Initialize a control container with the numbers from 0 to size, shuffled.
-	C<int, std::allocator<int>> control(begin(v), end(v));
+	// Initialize control containers with the numbers from 0 to size, shuffled.
+	list<int> std_l(begin(v), end(v));
+	vector<int> std_v(begin(v), end(v));
+	set<int> std_s(begin(v), end(v));
 
-	// Initialize three containers with different policies with the same values as the control container.
-	S<int, so::find_policy::count> count(begin(control), end(control));
-	S<int, so::find_policy::transpose> transpose(begin(control), end(control));
-	S<int, so::find_policy::move_to_front> mtf(begin(control), end(control));
+	// Initialize three so::lists and three so::vector with different policies with the same values as the control container.
+	so::list<int, so::find_policy::count> so_l_count(begin(v), end(v));
+	so::list<int, so::find_policy::transpose> so_l_transpose(begin(v), end(v));
+	so::list<int, so::find_policy::move_to_front> so_l_mtf(begin(v), end(v));
+	so::vector<int, so::find_policy::count> so_v_count(begin(v), end(v));
+	so::vector<int, so::find_policy::transpose> so_v_transpose(begin(v), end(v));
+	so::vector<int, so::find_policy::move_to_front> so_v_mtf(begin(v), end(v));
 
 	// Generate 100000 numbers to search for given the passed distribution.
 	random_device rd;
@@ -50,90 +55,134 @@ void test(size_t size, const double sigma)
 	generate_n(back_inserter(searches), 100000, [&dis, &gen]{ return dis(gen); });
 
 
-	// Perform the for the numbers on all four containers, in parallel.
 	chrono::high_resolution_clock hrc;
 
-	auto control_time = async(launch::async, [&hrc, &searches, &control]()
+	// Perform the search on the control group.
+	auto std_l_time = async(launch::deferred, [&hrc, &searches, &std_l]()
 	{
 		auto start = hrc.now();
 
 		for(size_t i = 0; i != searches.size(); ++i)
 		{
-			find(begin(control), end(control), searches[i]);
+			find(begin(std_l), end(std_l), searches[i]);
 		}
 	
 		return chrono::duration_cast<chrono::milliseconds>(hrc.now() - start).count();
 	});
 
-	auto count_time = async(launch::async, [&hrc, &searches, &count]()
+	auto std_v_time = async(launch::deferred, [&hrc, &searches, &std_v]()
 	{
 		auto start = hrc.now();
 
 		for(size_t i = 0; i != searches.size(); ++i)
 		{
-			count.find(searches[i]);
+			find(begin(std_v), end(std_v), searches[i]);
 		}
-
+	
 		return chrono::duration_cast<chrono::milliseconds>(hrc.now() - start).count();
 	});
-
-	auto transpose_time = async(launch::async, [&hrc, &searches, &transpose]()
-	{
-		auto start = hrc.now();
-
-		for(size_t i = 0; i != searches.size(); ++i)
-		{
-			transpose.find(searches[i]);
-		}
-
-		return chrono::duration_cast<chrono::milliseconds>(hrc.now() - start).count();
-	});
-
+	
 	auto start = hrc.now();
 
 	for(size_t i = 0; i != searches.size(); ++i)
 	{
-		mtf.find(searches[i]);
+		std_s.find(searches[i]);
 	}
 	
-	cout << "find_policy::move_to_front: " << chrono::duration_cast<chrono::milliseconds>(hrc.now() - start).count() << "ms" << endl;
-	cout << "find_policy::transpose: " << transpose_time.get() << "ms" << endl;
-	cout << "find_policy::count: " << count_time.get() << "ms" << endl;
-	cout << "std::control: " << control_time.get() << "ms" << endl;
+	cout << "std::set: " << chrono::duration_cast<chrono::milliseconds>(hrc.now() - start).count() << "ms" << endl;
+	cout << "std::vector: " << std_v_time.get() << "ms" << endl;
+	cout << "std::list: " << std_l_time.get() << "ms" << endl;
+
+
+	// Perform the search on the self-organizing containers.
+	auto so_l_count_time = async(launch::deferred, [&hrc, &searches, &so_l_count]()
+	{
+		auto start = hrc.now();
+
+		for(size_t i = 0; i != searches.size(); ++i)
+		{
+			so_l_count.find(searches[i]);
+		}
+
+		return chrono::duration_cast<chrono::milliseconds>(hrc.now() - start).count();
+	});
+
+	auto so_l_transpose_time = async(launch::deferred, [&hrc, &searches, &so_l_transpose]()
+	{
+		auto start = hrc.now();
+
+		for(size_t i = 0; i != searches.size(); ++i)
+		{
+			so_l_transpose.find(searches[i]);
+		}
+
+		return chrono::duration_cast<chrono::milliseconds>(hrc.now() - start).count();
+	});
+
+	auto so_l_mtf_time = async(launch::deferred, [&hrc, &searches, &so_l_mtf]()
+	{
+		auto start = hrc.now();
+
+		for(size_t i = 0; i != searches.size(); ++i)
+		{
+			so_l_mtf.find(searches[i]);
+		}
+
+		return chrono::duration_cast<chrono::milliseconds>(hrc.now() - start).count();
+	});
+
+	auto so_v_count_time = async(launch::deferred, [&hrc, &searches, &so_v_count]()
+	{
+		auto start = hrc.now();
+
+		for(size_t i = 0; i != searches.size(); ++i)
+		{
+			so_v_count.find(searches[i]);
+		}
+
+		return chrono::duration_cast<chrono::milliseconds>(hrc.now() - start).count();
+	});
+
+	auto so_v_transpose_time = async(launch::deferred, [&hrc, &searches, &so_v_transpose]()
+	{
+		auto start = hrc.now();
+
+		for(size_t i = 0; i != searches.size(); ++i)
+		{
+			so_v_transpose.find(searches[i]);
+		}
+
+		return chrono::duration_cast<chrono::milliseconds>(hrc.now() - start).count();
+	});
+
+	start = hrc.now();
+
+	for(size_t i = 0; i != searches.size(); ++i)
+	{
+		so_v_mtf.find(searches[i]);
+	}
+	
+	cout << "so::v<move_to_front>: " << chrono::duration_cast<chrono::milliseconds>(hrc.now() - start).count() << "ms" << endl;
+	cout << "so::v<transpose>: " << so_v_transpose_time.get() << "ms" << endl;
+	cout << "so::v<count>: " << so_v_count_time.get() << "ms" << endl;
+	cout << "so::l<move_to_front>: " << so_l_mtf_time.get() << "ms" << endl;
+	cout << "so::l<transpose>: " << so_l_transpose_time.get() << "ms" << endl;
+	cout << "so::l<count>: " << so_l_count_time.get() << "ms" << endl;
 }
 
 int main()
 {
-	cout << "list<>" << endl;
-
 	for(double sigma = 15000.; sigma > 4999.; sigma -= 5000)
 	{
 		cout << "Sigma: " << sigma << endl;
-		test<std::list, so::list>(100000, sigma);
+		test(100000, sigma);
 		cout << endl;
 	}
 
 	for(double sigma = 4000.; sigma > 999.; sigma -= 1000)
 	{
 		cout << "Sigma: " << sigma << endl;
-		test<std::list, so::list>(100000, sigma);
-		cout << endl;
-	}
-
-	cout << endl;
-	cout << "vector<>" << endl;
-
-	for(double sigma = 15000.; sigma > 4999.; sigma -= 5000)
-	{
-		cout << "Sigma: " << sigma << endl;
-		test<std::vector, so::vector>(100000, sigma);
-		cout << endl;
-	}
-
-	for(double sigma = 4000.; sigma > 999.; sigma -= 1000)
-	{
-		cout << "Sigma: " << sigma << endl;
-		test<std::vector, so::vector>(100000, sigma);
+		test(100000, sigma);
 		cout << endl;
 	}
 
