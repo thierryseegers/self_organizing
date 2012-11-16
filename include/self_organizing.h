@@ -737,24 +737,26 @@ We already know that when searching for elements in a container in a purely rand
 There would indeed be no useful information from past searches to use and optimize future searches.
 Self-organizing lists must only be used when searches are not random.
 
-I tested the performance of the following scenario.
-I randomly shuffled integers from 0 to 999999 and copied them to nine containers:
+For the performance tests, I used the following nine containers:
  - One \c std::list, one \c std::vector and one \c std::set.
  - Three self_organizing::list, each with a different \ref self_organizing::find_policy "find_policy".
  - Three self_organizing::vector, each with a different \ref self_organizing::find_policy "find_policy".
 
- I then generated 100000 random integers multiple times from the same range using a <a href=http://en.wikipedia.org/wiki/Normal_distribution>normal distribution</a>.
+\subsubsection normal-static Search of normally distributed elements in a static container
+
+I randomly shuffled integers from 0 to 999999 and copied them to the container.
+I then generated 100000 random integers multiple times from the same range using a <a href=http://en.wikipedia.org/wiki/Normal_distribution>normal distribution</a>.
 Each time, the mean was kept at 50000 and the variance was changed. Here are the results.
 
-\image html performance.png
+\image html performance-normally-distributed-static-container.png
 
 First obvious conclusion: \c std::set crushes the competition.
 It barely registers.
 But, then again, this scenario is essentially perfect for it.
-All data is known ahead of time and I'm only measuring the time taken to search, not the time taken to set up to container.
-\c std::set reorganized the data in order during construction and and its \a log(N) search performance did the rest.
+All data is known ahead of time and I'm only measuring the time taken to search, not the time taken to set up the container.
+\c std::set reorganized the data during construction and its \a log(N) search performance did the rest.
 
-At the other side of the spectrum, \c self_organizing::vector<find_policy::count> and \c self_organizing::vector<find_policy::move_to_front> can't keep up at all.
+On the other side of the spectrum, \c self_organizing::vector<find_policy::count> and \c self_organizing::vector<find_policy::move_to_front> can't keep up at all.
 The maintenance required is utterly misadapted to a \c vector since both policies constanly rearrange elements using insertion, an operation that \c vector is not made for.
 
 What's left in between?
@@ -770,7 +772,29 @@ I'm surprised the transposition strategy didn't help that much.
 Remains, \c self_organizing::list<find_policy::count> and \c self_organizing::list<find_policy::move_to_front>.
 Now those are interesting because they show a pattern of improving performance as the search variance is reduced.
 \c self_organizing::list<find_policy::move_to_front> even managed to come ahead of the \c vectors in the last test!
+Are self-organized lists vindicated?
+Not quite.
+To favor a self-organizing list as your container in this scenario, you would have to know in advance that your future searches will be performed on a very small subset of your data.
+A variance of 1000 means that about two-thirds of searches will be performed on a window of 2000 elements.
+It also implies that virtually all searches will be performed on a window of six times the variance value, or 6000.
+Given our container size of 100000, it's a far cry from the "80/20" ratio.
 
+But let's try to give our self-organizing containers a fighting chance...
+
+\subsubsection normal-sorted-static Search of normally distributed and sorted elements in a static container
+
+This next test is a carbon copy of the previous test except that the elements to search are sorted after they are generated.
+The purpose is to imitate a system where it is expected that not only a small subset of elements will be searched for, but also that when an element is searched for it is likely to be immediately searched for again.
+This situation will not help the transposition strategy but will help the move-to-front strategy.
+Let's see.
+
+\image html performance-normally-distributed-sorted-static-container.png
+
+The picture is the same as before except for the performance of \c self_organizing::list<find_policy::move_to_front>.
+It has benefited tremendeously from the search pattern, equating or besting the performance of \c std::vector for the smaller variance values.
+It still doesn't hold a candle to \c std::set.
+No surprise.
+Let's remove the staticity aspect from our test and see how \c std::set fairs in such conditions.
 
 \section sample Sample code
 

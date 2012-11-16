@@ -15,7 +15,7 @@ using namespace std;
 
 namespace so = self_organizing;
 
-void test(size_t size, const double sigma)
+void test(size_t size, const double sigma, const bool sorted = false)
 {
 	static vector<int> v(size);
 	static bool initialized = false;
@@ -54,6 +54,7 @@ void test(size_t size, const double sigma)
 	vector<int> searches;
 	generate_n(back_inserter(searches), 100000, [&dis, &gen]{ return dis(gen); });
 
+	if(sorted) sort(searches.begin(), searches.end());
 
 	chrono::high_resolution_clock hrc;
 
@@ -175,14 +176,14 @@ int main()
 	for(double sigma = 15000.; sigma > 4999.; sigma -= 5000)
 	{
 		cout << "Sigma: " << sigma << endl;
-		test(100000, sigma);
+		test(100000, sigma, true);
 		cout << endl;
 	}
 
 	for(double sigma = 4000.; sigma > 999.; sigma -= 1000)
 	{
 		cout << "Sigma: " << sigma << endl;
-		test(100000, sigma);
+		test(100000, sigma, true);
 		cout << endl;
 	}
 
