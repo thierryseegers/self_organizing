@@ -6,19 +6,14 @@
 
 \mainpage self_organizing
 
- - \ref introduction
- - \ref considerations
- - \ref principles
- - \ref performance
- - \ref sample
- - \ref license
+\tableofcontents
 
 \section introduction Introduction
 
 \subsection why Why this project?
 
 I started this project the same way I started a few others already.
-I cracked open my "Data Structures and Algorithm Analysis" book from college and browsed its table of contents for an interesting concept to implement in C++11.
+I cracked open my "Data Structures and Algorithm Analysis"<SUP>[1]</SUP> book from college and browsed its table of contents for an interesting concept to implement in C++11.
 This project is about exploring what the new C++ standard offers and putting it in practice in smallish, self-contained libraries.
 I'm also using this project to try out GitHub's offering.
 This project is \e not the most perfomant and efficient self-orginizing list you've ever seen.
@@ -172,6 +167,10 @@ FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 \endverbatim
+
+\section references References
+
+1. Clifford A. Shaffer. <EM>A practical Introduction to Data Structures and Algorithm Analysis.</EM> Prentice Hall, Upper Saddle River, NJ, 1997.
 
 */
 
