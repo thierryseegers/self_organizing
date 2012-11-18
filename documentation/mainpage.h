@@ -36,7 +36,7 @@ Different self-organizing strategies exist, the following three are offered in t
 
 \section considerations Technical considerations
 
-Because of the motivation for this project to learn C++11 and put it in practice, you will obviously need a C++11 compliant compiler.
+Because of the motivation for this project to learn C++11 and put it in practice, you will obviously need a C++11 compliant compiler and library.
 I'm using Visual Studio 2012 to develop but I additionally test with g++ 4.6 and XCode 4.5.
 I'm not using advanced or arcane C++11 features, so earlier version of these toolchains might also work.
 
@@ -75,26 +75,28 @@ So, are they worth it?
 
 We already know that when searching for elements in a container in a purely random fashion, a self-organizing list will offer no performance improvement, only overhead.
 There would indeed be no useful information from past searches to use and optimize future searches.
-Self-organizing lists must only be used when searches are not random.
+Self-organizing lists must only be used when searches are not uniformly random.
 
-For the performance tests, I used the following nine containers:
+\subsection normal Search of normally distributed elements
+
+For this performance test, I used the following nine containers:
  - One \c std::list, one \c std::vector and one \c std::set.
  - Three self_organizing::list, each with a different \ref self_organizing::find_policy "find_policy".
  - Three self_organizing::vector, each with a different \ref self_organizing::find_policy "find_policy".
 
-\subsection normal-static Search of normally distributed elements in a static container
+I randomly shuffled integers from 0 to 999999 and copied them to the containers.
+I then generated 100000 random integers multiple times from the same range using a <A href=http://en.wikipedia.org/wiki/Normal_distribution>normal distribution</A>.
+Each time, the mean was kept at 50000 and the variance was changed.
+I measure both the time taken to contruct the container and the time taken to perform the searches.
+This avoids giving an unfair advantage to \c std::set which sorts data at construction time, a costly operation, in order to afford fast searches.
+Here are the results.
 
-I randomly shuffled integers from 0 to 999999 and copied them to the container.
-I then generated 100000 random integers multiple times from the same range using a <a href=http://en.wikipedia.org/wiki/Normal_distribution>normal distribution</a>.
-Each time, the mean was kept at 50000 and the variance was changed. Here are the results.
-
-\image html performance-normally-distributed-static-container.png
+\image html performance-normal.png
 
 First obvious conclusion: \c std::set crushes the competition.
 It barely registers.
-But, then again, this scenario is essentially perfect for it.
-All data is known ahead of time and I'm only measuring the time taken to search, not the time taken to set up the container.
-\c std::set reorganized the data during construction and its \a log(N) search performance did the rest.
+\c std::set's \a log(N) search performance shines.
+Sorting the data even appears to have been done for free when compared to the other containers' performance.
 
 On the other side of the spectrum, \c self_organizing::vector<find_policy::count> and \c self_organizing::vector<find_policy::move_to_front> can't keep up at all.
 The maintenance required is utterly misadapted to a \c vector since both policies constanly rearrange elements using insertion, an operation that \c vector is not made for.
@@ -121,20 +123,38 @@ Given our container size of 100000, it's a far cry from the "80/20" ratio.
 
 But let's try to give our self-organizing containers a fighting chance...
 
-\subsection normal-sorted-static Search of normally distributed and sorted elements in a static container
+\subsection normal-sorted Search of normally distributed and sorted elements
 
 This next test is a carbon copy of the previous test except that the elements to search are sorted after they are generated.
-The purpose is to imitate a system where it is expected that not only a small subset of elements will be searched for, but also that when an element is searched for it is likely to be immediately searched for again.
+The purpose is to imitate a system where it is expected that not only a small subset of elements will be searched for, but also that when an element is searched for it is highly likely to be immediately searched for again.
 This situation will not help the transposition strategy but will help the move-to-front strategy.
 Let's see.
 
-\image html performance-normally-distributed-sorted-static-container.png
+\image html performance-normal-sorted.png
 
 The picture is the same as before except for the performance of \c self_organizing::list<find_policy::move_to_front>.
 It has benefited tremendeously from the search pattern, equating or besting the performance of \c std::vector for the smaller variance values.
 It still doesn't hold a candle to \c std::set.
-No surprise.
-Let's remove the staticity aspect from our test and see how \c std::set fairs in such conditions.
+Let's up the ante.
+
+\subsection geometric Search of geometrically distributed elements
+
+Using knowledge from the previous tests, I narrowed the contenders to the following three:
+ - One \c std::set
+ - One \c self_organizing::list<find_policy::count>
+ - One \c self_organizing::list<find_policy::move_to_front>
+
+I randomly shuffled integers from 0 to 999999 and copied them to the containers.
+I then generated 100000 random integers multiple times from the same range using a <A href=http://en.wikipedia.org/wiki/Geometric_distribution>geometric distribution</A> and varying \em p.
+I measure both the time taken to contruct the container and the time taken to perform the searches.
+
+\image html performance-geometric-100000.png
+
+Self-organizing lists beat \c std::set! Victory!
+
+Alas, this victory tastes sour.
+These values of \em p are ridiculously small.
+At <EM>p = 0.04</EM> &mdash;the largest for which lists beat <TT>std::set</TT>&mdash; the variance is a measly <A href=http://www.wolframalpha.com/input/?i=GeometricDistribution[0.1]>90</A>.
 
 \section sample Sample code
 
