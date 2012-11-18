@@ -130,18 +130,26 @@ API_TEST_CASE("API/erase", "Container shrinks as elements are erased.", erase)
 	REQUIRE(i == c.end());
 }
 
-API_TEST_CASE("API/push_back", "Size of cleared container is 0.", push_back)
+API_TEST_CASE("API/push_back", "Pushing values. Push it! Push! Push!", push_back)
 {
 	Container c;
+
+	// Value push_back.
 	for(const auto& a : zero_to_seven)
 	{
 		c.push_back(a);
 	}
 
 	REQUIRE(equal(c.begin(), c.end(), zero_to_seven.begin()));
+
+	// Range push_back.
+	c.clear();
+	c.push_back(zero_to_seven.begin(), zero_to_seven.end());
+
+	REQUIRE(equal(c.begin(), c.end(), zero_to_seven.begin()));
 }
 
-API_TEST_CASE("API/find", "Elements from container can be found. Elements not from caontainer cannot be found.", find)
+API_TEST_CASE("API/find", "Elements from container can be found. Elements not from container cannot be found.", find)
 {
 	Container c(begin(zero_to_seven), end(zero_to_seven));
 	typename Container::iterator i;
@@ -156,7 +164,7 @@ API_TEST_CASE("API/find", "Elements from container can be found. Elements not fr
 	REQUIRE(i == c.end());
 }
 
-API_TEST_CASE("API/find_if", "Elements from container can be found with a predicate. Elements not from caontainer cannot be found.", find_if)
+API_TEST_CASE("API/find_if", "Elements from container can be found with a predicate. Elements not from container cannot be found.", find_if)
 {
 	Container c(begin(zero_to_seven), end(zero_to_seven));
 	typename Container::iterator i;
@@ -184,7 +192,7 @@ bool policy_check(vector<int> starting_order, vector<int> find_order, vector<int
 			v.find(i);
 		}
 
-		CHECK(equal(begin(v), end(v), begin(final_order)));
+		CHECK(equal(v.begin(), v.end(), begin(final_order)));
 	}
 
 	{

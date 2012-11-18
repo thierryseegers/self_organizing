@@ -279,6 +279,13 @@ public:
 		return c_.push_back(value);
 	}
 
+	//!\brief Adds a range of elements at the end of the container.
+	template<typename I>
+	void push_back(I first, I last)
+	{
+		c_.insert(c_.end(), first, last);
+	}
+
 	//!\brief Finds an element.
 	//!\param value The element to find.
 	//!\return An iterator to the element, if found. Otherwise \ref self_organizing::detail::container<Container, T, FindPolicy>::end "end".
@@ -556,6 +563,12 @@ public:
 	void push_back(const value_type& value)
 	{
 		return c_.push_back(std::make_pair(0, value));
+	}
+
+	template<typename I>
+	void push_back(I first, I last)
+	{
+		std::generate_n(std::back_inserter(c_), std::distance(first, last), [&first]{ return std::make_pair(0, *(first++)); });
 	}
 
 	iterator find(const value_type& value)
