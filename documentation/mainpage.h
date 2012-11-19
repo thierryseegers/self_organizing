@@ -77,40 +77,48 @@ We already know that when searching for elements in a container in a purely rand
 There would indeed be no useful information from past searches to use and optimize future searches.
 Self-organizing lists must only be used when searches are not uniformly random.
 
+I'll state upfront that if one considers only the time taken to search, \c std::unordered_set and \c std::set are virtually unbeatable under the conditions I've set for these tests.
+The only way I could get \c self_organizing::lists to come ahead of was when I included the time taken to construct the container in the overall performance evaluation.
+So that's something important to consider.
+
+Performance tests were run with two random distributions, normal and geometric.
+After the numbers were generated, an extra step was performed to substitute the generated numbers with values from a randomly generated substitution dictionary.
+This avoided having the numbers generated being too predictable or concentrated.
+For instance, for a geometric distribution, even though the distribution is random, the most common number generated will \em always be 0, the second will \em always be 1, etc.
+Thus, this extra step added randomness to the numbers themselves, rather than just their distribution.
+
 \subsection normal Search of normally distributed elements
 
-For this performance test, I used the following nine containers:
- - One \c std::list, one \c std::vector and one \c std::set.
+For this performance test, I used the following containers:
+ - One \c std::set, one \c std::unordered_set, one \c std::list and one \c std::vector.
  - Three self_organizing::list, each with a different \ref self_organizing::find_policy "find_policy".
  - Three self_organizing::vector, each with a different \ref self_organizing::find_policy "find_policy".
 
-I randomly shuffled integers from 0 to 999999 and copied them to the containers.
-I then generated 100000 random integers multiple times from the same range using a <A href=http://en.wikipedia.org/wiki/Normal_distribution>normal distribution</A>.
+Each container was constructed with value from the range [0, 999999[.
+I then generate 100000 random integers from the same range using a <A href=http://en.wikipedia.org/wiki/Normal_distribution>normal distribution</A>.
 Each time, the mean was kept at 50000 and the variance was changed.
-I measure both the time taken to contruct the container and the time taken to perform the searches.
-This avoids giving an unfair advantage to \c std::set which sorts data at construction time, a costly operation, in order to afford fast searches.
-Here are the results.
+Then, the extra susbstitution step described above was applied.
 
 \image html performance-normal.png
 
-First obvious conclusion: \c std::set crushes the competition.
-It barely registers.
-\c std::set's \a log(N) search performance shines.
-Sorting the data even appears to have been done for free when compared to the other containers' performance.
+First obvious conclusion: \c std::set and \c std::unordered_set crush the competition.
+They barely register on the graph.
+\c std::set's <em>O(log(N))</em> search performance shines.
+\c std::unordered_set's amortized constant performance fares even better, though it doesn't show on the graph.
+Sorting or hashing the data even appears to have been done for free when compared to the other containers' performance.
 
 On the other side of the spectrum, \c self_organizing::vector<find_policy::count> and \c self_organizing::vector<find_policy::move_to_front> can't keep up at all.
-The maintenance required is utterly misadapted to a \c vector since both policies constanly rearrange elements using insertion, an operation that \c vector is not made for.
+The maintenance required is utterly misadapted to a \c vector since both policies constanly rearrange elements using insertion, an operation that \c std::vector is not made for.
 
 What's left in between?
-In third place we have \c std::vector.
+In fourth place we have \c std::vector.
 The nature of this test favors packed and static data, so that's no surprise.
 But ahead of it by a nose is \c self_organizing::vector<find_policy::transpose>.
-The transposition strategy of swapping element incurs little overhead to a \c vector and afforded it the second place.
+The transposition strategy of swapping element incurs little overhead to \c std::vector and afforded it the second place.
 
 Where are our lists?
 \c std::list and \c self_organizing::list<find_policy::transpose> performed in lock-step, mimicking their \c vector cousins.
 Only, three times slower.
-I'm surprised the transposition strategy didn't help that much.
 Remains, \c self_organizing::list<find_policy::count> and \c self_organizing::list<find_policy::move_to_front>.
 Now those are interesting because they show a pattern of improving performance as the search variance is reduced.
 \c self_organizing::list<find_policy::move_to_front> even managed to come ahead of the \c vectors in the last test!
@@ -127,34 +135,52 @@ But let's try to give our self-organizing containers a fighting chance...
 
 This next test is a carbon copy of the previous test except that the elements to search are sorted after they are generated.
 The purpose is to imitate a system where it is expected that not only a small subset of elements will be searched for, but also that when an element is searched for it is highly likely to be immediately searched for again.
-This situation will not help the transposition strategy but will help the move-to-front strategy.
+This situation will not help the transposition strategy but should help the move-to-front strategy.
 Let's see.
 
 \image html performance-normal-sorted.png
 
 The picture is the same as before except for the performance of \c self_organizing::list<find_policy::move_to_front>.
 It has benefited tremendeously from the search pattern, equating or besting the performance of \c std::vector for the smaller variance values.
-It still doesn't hold a candle to \c std::set.
+But, it still doesn't hold a candle to either of \c std::set and \c std::unordered_set.
 Let's up the ante.
 
 \subsection geometric Search of geometrically distributed elements
 
-Using knowledge from the previous tests, I narrowed the contenders to the following three:
+Using knowledge from the previous tests, I narrowed the contenders to the following four:
  - One \c std::set
+ - One \c std::unordered_set
  - One \c self_organizing::list<find_policy::count>
  - One \c self_organizing::list<find_policy::move_to_front>
 
-I randomly shuffled integers from 0 to 999999 and copied them to the containers.
-I then generated 100000 random integers multiple times from the same range using a <A href=http://en.wikipedia.org/wiki/Geometric_distribution>geometric distribution</A> and varying \em p.
-I measure both the time taken to contruct the container and the time taken to perform the searches.
+Each container was constructed with value from the range [0, 999999[.
+I then generated 100000 random integers multiple times from the same range using a < href=http://en.wikipedia.org/wiki/Geometric_distribution>geometric distribution</a> and varying \em p.
+I measure both the time taken to contruct the container and the time taken to perform the searches twenty-five times to average out any outlying result.
 
 \image html performance-geometric-100000.png
 
 Self-organizing lists beat \c std::set! Victory!
 
-Alas, this victory tastes sour.
+Alas, it is a short-lived victory.
 These values of \em p are ridiculously small.
-At <EM>p = 0.04</EM> &mdash;the largest for which lists beat <TT>std::set</TT>&mdash; the variance is a measly <A href=http://www.wolframalpha.com/input/?i=GeometricDistribution[0.1]>90</A>.
+At <em>p = 0.2</em> &mdash;the largest for which \c self_organizing::lists beat <tt>std::set</tt>&mdash; the variance is a measly <a href=http://www.wolframalpha.com/input/?i=GeometricDistribution[0.2]>20</a>.
+
+Can we do better by making the sets do worse?
+Consider that these tests measure both construction time and search time.
+For \c std::set that means <em>O(Nlog(N))</em> construction performance and <em>O(log(N))</em> search performance.
+Thus, if the size of the data set goes up by an order of magnitude, the overall performance of \c std::set should degrade proportionally.
+As for \c std::unordered_set, it's construction performance is <em>O(N)</em> but it incurs hashing overhead.
+So, our \c self_organizing::lists are at an advantage when considering construction performance but let's hope their search strategy can keep up.
+
+\image html performance-geometric-1000000.png
+
+With the size of the data set increased to one million, we managed to push \em p further down to 0.01, a variance of 9900.
+Or 1% of our data set.
+Meh.
+
+So.
+There you have it.
+And I'm calling it a day.
 
 \section sample Sample code
 
