@@ -1,5 +1,4 @@
-Self-organizing lists in C++11
-==============================
+# Self-organizing lists in C++11
 
 The purpose of this project is to:
  * Practice C++11.
