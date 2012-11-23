@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(self_organizing)
 
-set(VERSION_MAJOR 0)
+set(VERSION_MAJOR 1)
 set(VERSION_MINOR 0)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
